@@ -1,0 +1,61 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>Networks</title>
+     <link href='http://fonts.googleapis.com/css?family=Bree+Serif' rel='stylesheet' type='text/css'> 
+    <link rel="stylesheet" href="css/normalize.css" type="text/css" media="screen">
+	<link rel="stylesheet" href="css/grid.css" type="text/css" media="screen">
+	<link rel="stylesheet" href="css/style.css" type="text/css" media="screen">
+	<meta name="viewport" content="width=device-width, initial-scale = 1.0">
+
+  </head>
+  <body class="container_12">
+      <div  class="container_12">
+        <div class="grid_2">
+          <input type="text" maxlength="10" id="boxVertex" placeholder="Node" onkeydown="if (event.keyCode != 13){return BoxValidation(event)}"/>
+          <div class="grid_6"><input type="button" id="btnAddVertex" value="Add" onclick="" /></div>
+          <div class="grid_6"><input type="button" id="btnRemoveVertex" value="Remove" /></div>
+        </div>
+        <div class="grid_4">
+          <div class="grid_2"><input type="text" maxlength="10" id="boxEdge1" placeholder="Source" onkeydown="if (event.keyCode == 13){ document.getElementById('btnAddEdge').click()} else{ return BoxValidation(event)}"/></div>
+          <div class="grid_2"><input type="text" maxlength="10" id="boxEdge2" placeholder="Sink" onkeydown="if (event.keyCode == 13){ document.getElementById('btnAddEdge').click()} else{ return BoxValidation(event)}"/></div> 
+          <div class="grid_2"><input type="text" maxlength="4" id="boxEdgeCost" placeholder="Cost" onkeydown="if (event.keyCode == 13){ document.getElementById('btnAddEdge').click()} else{ return isNumber(event)}"/></div>
+          <div class="grid_2"><input type="text" maxlength="4" id="boxEdgeMinFlow" placeholder="MinFlow" onkeydown="if (event.keyCode == 13){ document.getElementById('btnAddEdge').click()} else{ return isNumber(event)}"/></div>
+          <div class="grid_2"><input type="text" maxlength="4" id="boxEdgeFlow" placeholder="Flow" onkeydown="if (event.keyCode == 13){ document.getElementById('btnAddEdge').click()} else{ return isNumber(event)}"/></div>
+          <div class="grid_2"><input type="text" maxlength="4" id="boxEdgeMaxFlow" placeholder="MaxFlow" onkeydown="if (event.keyCode == 13){ document.getElementById('btnAddEdge').click()} else{ return isNumber(event)}"/></div>
+          <div class="grid_6"><input class="button" type="button" id="btnAddEdge" value="Add" /></div>
+          <div class="grid_6"><input class="button" type="button" id="btnRemoveEdge" value="Remove" /></div>
+        </div>
+        <div class="grid_5">
+          <div class="grid_6"><input type="text" maxlength="10" id="boxRoot" placeholder="Root"/></div>
+          <div class="grid_4"><input type="text" maxlength="10" id="boxDest" placeholder="Destination"/></div>
+          <div class="grid_2"><input type="text" maxlength="3" id="boxLimit" placeholder="Limit" onkeydown="return isNumber(event)"/></div>
+          <div class="grid_2"><input type="button" id="btnBFS" value="BF" /></div>
+          <div class="grid_2"><input type="button" id="btnDFSr" value="DFr" /></div>
+          <div class="grid_2"><input type="button" id="btnDFSi" value="DFi" /></div>
+          <div class="grid_2"><input type="button" id="btnPRIM" value="Prm" /></div>
+          <div class="grid_2"><input type="button" id="btnKRUSKAL" value="Kruskal" /></div>
+          <div class="grid_2"><input type="button" id="btnDIJKSTRA" value="Dijkstra" /></div>
+          <div class="grid_4"><input type="button" id="btnFORDF" value="FordFulkerson" /></div>
+          <div class="grid_4"><input type="button" id="btnMCCF" value="MinCostConstFlow" /></div>
+        </div>
+          <div class="grid_1">
+              <div class="grid_12"><input  type="checkbox" id="chckDirected" value="true">Directed</div>
+              <div class="grid_12"><input type="button" id="btnReset" value="Reset" /></div>
+          </div>
+      </div>
+
+    <div  class="container_12"><section class="grid_12" id="CanvasSection"></section></div>
+    <div id="copyright" class="grid_12">
+        <p>© 2014 dancmj</p>
+    </div>    
+  </body>
+
+  <!-- // <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script> -->
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+  <script src="./js/d3/d3.v3.js"></script>
+  <script src="./js/graphTree2.js"></script>
+  <script src="./js/drawTree2222.js"></script>
+  <script src="./js/textBoxChecker.js"></script>
+    
+</html>

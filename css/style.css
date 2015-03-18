@@ -1,0 +1,137 @@
+body{
+  margin: 0;
+  padding: 0;
+  overflow:hidden;
+}
+
+p{ 
+  text-align: center; 
+  overflow: overlay;
+  position: relative;
+}
+
+body{
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  background-color: rgb(98, 98, 98)
+}
+
+input {
+    width: 96%;
+    text-align: center;
+    font-size: 1em;
+    margin: 0;
+    padding: 0;
+}
+
+table {
+    float:left;
+   margin-right:5px;
+}
+
+
+#CanvasSection {
+  background-color: #41414d;
+}
+
+.node{
+  cursor:none;
+/*  fill: #8e44ad;*/
+}
+
+.NodeText{
+  font-size: 1.5em;
+  font-family: 'Bree Serif', serif;
+  cursor:none;
+ 
+  fill: #000;
+  -webkit-transition-duration: 1s, 1s;
+-webkit-transition-timing-function: linear, ease-in;
+-moz-transition-property:color, text;
+-moz-transition-duration:1s;
+-moz-transition-timing-function: linear, ease-in;
+
+-o-transition-property:color, text;
+-o-transition-duration:1s;
+-o-transition-timing-function: linear, ease-in;
+}
+.NodeText:hover{
+/*font-size: 2.5em;*/
+/*  fill:#363601;*/
+/*  text-decoration: underline; */
+  cursor:none;
+  font-family: 'Bree Serif', serif;
+}
+
+
+
+
+.bg {
+  fill: #3a3a3a;
+  pointer-events: all;
+}
+
+.nodeStrokeClass {
+    stroke: hsla(0, 0%, 28%, 0.69);
+    stroke-width: 2;
+}
+.nodeText {
+
+  
+}
+
+.cursor {
+  fill: none;
+  stroke: brown;
+  pointer-events: none;
+}
+
+
+.link {
+  fill: none;
+  stroke: #000000;/*#000*/
+  stroke-width: 0.06em;
+}
+.link_path {
+  fill: none;
+  stroke: #f1c40f;
+  stroke-width: .07em;
+}
+
+.edge {
+  stroke: #999;
+}
+
+.linklabel{
+/*    fill:black;*/
+	font-size:.95em;
+}
+
+.button {
+    float:left;
+}
+
+li {
+    list-style-type: none;
+}
+
+ul {
+    margin: 0;
+    padding: 0;
+}
+
+#chckDirected {
+    width: 1em;
+    height: 1em;
+}
+
+#copyright {
+	border-top: 8px solid #2a0400;
+	padding: 2% 0;
+	margin: 2% 0;
+	text-align: center;
+}

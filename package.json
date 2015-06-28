@@ -1,0 +1,22 @@
+{
+  "name": "graph-visualizer",
+  "version": "1.0.0",
+  "description": "A graph visualization app made with [AngularJS](https://angularjs.org/) and [D3.js](http://d3js.org/).",
+  "main": "server.js",
+  "scripts": {
+    "test": "./node_modules/.bin/mocha -R nyan"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dancmj/graph-visualizer"
+  },
+  "author": "dancmj",
+  "license": "ISC",
+  "dependencies": {
+    "chai": "^3.0.0",
+    "express": "^4.13.0",
+    "gulp": "^3.9.0",
+    "mocha": "^2.2.5",
+    "sinon": "^1.15.4"
+  }
+}

@@ -2,11 +2,8 @@ var _ = require('lodash');
 var binaryHeap = require('../utils/binaryHeap.js');
 
 module.exports = function() {
-  function Vertex(n) {
-    this.name = _.trunc(_.trim(n), {
-      length: 10,
-      omission: ''
-    });
+  function Vertex(name) {
+    this.name = name;
     this.adjacentVertices = [];
     this.distanceFromRoot = 0;
     this.maxFlow = null;
@@ -43,18 +40,16 @@ module.exports = function() {
 
   Graph.prototype = {
     ContainsVertex: function(name) {
-      return (this.vertices.length != 0 && this.vertices.any(function(node) {
-        return node.name == name;
-      }));
+      return (this.vertices.length != 0 && _.some(this.vertices, { 'name': name }));
     },
     FindVertex: function(name) {
-      return (this.vertices.whereFirst(function(node) {
-        if (node.name == name) {
-          return node;
-        }
-      }));
+      return _.find(this.vertices, {'name': name});
     },
     AddVertex: function(name) {
+      name = _.trunc(_.trim(name), {
+        length: 10,
+        omission: ''
+      });
       if (this.ContainsVertex(name)) {
         return this.FindVertex(name);
       }

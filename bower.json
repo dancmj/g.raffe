@@ -21,6 +21,7 @@
     "bootstrap-css": "~3.3.4",
     "angular-bootstrap": "~0.13.0",
     "angular-route": "~1.4.1",
-    "angular-animate": "~1.4.1"
+    "angular-animate": "~1.4.1",
+    "lodash": "~3.10.0"
   }
 }

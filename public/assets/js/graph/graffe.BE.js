@@ -39,33 +39,34 @@ module.exports = function() {
   };
 
   Graph.prototype = {
-    ContainsVertex: function(name) {
-      return (this.vertices.length != 0 && _.some(this.vertices, {
-        'name': name
-      }));
-    },
     FindVertex: function(name) {
       return _.find(this.vertices, {
         'name': name
-      });
+      }) || false;
     },
     AddVertex: function(name) {
+      if(!name) return false;
       name = _.trunc(_.trim(name), {
         length: 10,
         omission: ''
       });
-      if (this.ContainsVertex(name)) {
-        return this.FindVertex(name);
-      }
+      var repeatedVertex = this.FindVertex(name);
+      if (repeatedVertex) return repeatedVertex;
+
       this.vertices.push(new Vertex(name));
       return _.last(this.vertices);
     },
     RemoveVertex: function(name){
-      if(!this.ContainsVertex(name)) return false
+      var eraseeVertex = this.FindVertex(name), self = this;
+      if(!eraseeVertex) return false;
 
-      var eraseeVertex = this.FindVertex(name);
+      _.forEachRight(eraseeVertex.adjacents, function(edge){
+        !edge.fake ? self.RemoveEdge(eraseeVertex.name, edge.sink.name) : self.RemoveEdge(edge.sink.name, eraseeVertex.name);
+      });
 
-      /// ERASE EDGES
+      this.vertices.splice(_.findIndex(this.vertices, function(vertex){
+        return vertex.name === name;
+      }), 1);
 
       return true;
     },
@@ -112,7 +113,6 @@ module.exports = function() {
       if( !this.edges.length || !source || !sink || sink.name == source.name || !this.FindEdge(source.name, sink.name)){
           return false;
       }
-      var self = this;
 
       source.adjacents.splice(_.findIndex(source.adjacents, function(edge){
         if(!edge.fake && edge.sink.name == sink.name) edge.redge = null;
@@ -120,13 +120,13 @@ module.exports = function() {
       }), 1);
 
       sink.adjacents.splice(_.findIndex(sink.adjacents, function(edge){
-        if(edge.fake && edge.sink.name == sink.name) edge.redge = null;
+        if(edge.fake && edge.source.name == sink.name) edge.redge = null;
         return !!edge.redge;
       }), 1);
 
-      this.edges.splice(_.findIndex(sink.adjacents, function(edge){
+      this.edges.splice(_.findIndex(this.edges, function(edge){
         return edge.source.name == source.name && edge.sink.name == sink.name;
-      }),1);
+      }), 1);
 
       return true;
     }

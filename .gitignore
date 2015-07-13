@@ -1,0 +1,5 @@
+_backup/
+.DS_Store
+node_modules
+bower_components
+.settings

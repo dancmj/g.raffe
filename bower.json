@@ -1,0 +1,27 @@
+{
+  "name": "graph-visualizer",
+  "version": "0.0.0",
+  "homepage": "https://github.com/dancmj/graph-visualizer",
+  "authors": [
+    "dancmj <daniel.c82@gmail.com>"
+  ],
+  "description": "Graph visualization app",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "d3": "~3.5.5",
+    "fontawesome": "~4.3.0",
+    "angular": "~1.4.1",
+    "bootstrap-css": "~3.3.4",
+    "angular-bootstrap": "~0.13.0",
+    "angular-route": "~1.4.1",
+    "angular-animate": "~1.4.1",
+    "lodash": "~3.10.0"
+  }
+}

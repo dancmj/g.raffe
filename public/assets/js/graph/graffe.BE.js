@@ -8,7 +8,7 @@ module.exports = function() {
     this.distanceFromRoot = 0;
     this.maxFlow = null;
     this.minFlow = 0;
-    this.discoveryLabel = -1;
+    this.color = -1;
     this.property = {
       key: Infinity,
       parent: null,
@@ -17,6 +17,7 @@ module.exports = function() {
   };
 
   function Edge(source, sink, properties) {
+    properties = properties || {};
     _.forEach(properties, function(val, key) {
       if (typeof val !== 'number') properties[key] = 0;
     })
@@ -28,7 +29,7 @@ module.exports = function() {
     this.flow = !properties.flow || properties.flow < 0 ? 0 : properties.flow > this.maxFlow ? this.maxFlow : properties.flow;
     this.redge = null;
     this.fake = false;
-    this.discoveryLabel = -1;
+    this.color = -1;
   };
 
   function Graph() {
@@ -45,7 +46,7 @@ module.exports = function() {
       }) || false;
     },
     AddVertex: function(name) {
-      if(!name) return false;
+      if (!name) return false;
       name = _.trunc(_.trim(name), {
         length: 10,
         omission: ''
@@ -56,22 +57,23 @@ module.exports = function() {
       this.vertices.push(new Vertex(name));
       return _.last(this.vertices);
     },
-    RemoveVertex: function(name){
-      var eraseeVertex = this.FindVertex(name), self = this;
-      if(!eraseeVertex) return false;
+    RemoveVertex: function(name) {
+      var eraseeVertex = this.FindVertex(name),
+        self = this;
+      if (!eraseeVertex) return false;
 
-      _.forEachRight(eraseeVertex.adjacents, function(edge){
+      _.forEachRight(eraseeVertex.adjacents, function(edge) {
         !edge.fake ? self.RemoveEdge(eraseeVertex.name, edge.sink.name) : self.RemoveEdge(edge.sink.name, eraseeVertex.name);
       });
 
-      this.vertices.splice(_.findIndex(this.vertices, function(vertex){
+      this.vertices.splice(_.findIndex(this.vertices, function(vertex) {
         return vertex.name === name;
       }), 1);
 
       return true;
     },
-    FindEdge: function(source, sink){
-      return _.find(this.edges, function(edge){
+    FindEdge: function(source, sink) {
+      return _.find(this.edges, function(edge) {
         return edge.sink.name == sink && edge.source.name == source;
       }) || false;
     },
@@ -80,7 +82,7 @@ module.exports = function() {
         return false;
       }
 
-      if(!properties){
+      if (!properties) {
         properties = {
           cost: 0,
           flow: 0,
@@ -93,10 +95,15 @@ module.exports = function() {
       sink = this.AddVertex(sink);
 
       var repeatedEdge = this.FindEdge(source.name, sink.name);
-      if(repeatedEdge) return repeatedEdge;
+      if (repeatedEdge) return repeatedEdge;
 
       var edge = new Edge(source, sink, properties);
-      var redge = new Edge(sink, source, {cost: Infinity, flow: 0, maxFlow: 0, minFlow: properties.minFlow});
+      var redge = new Edge(sink, source, {
+        cost: Infinity,
+        flow: 0,
+        maxFlow: 0,
+        minFlow: properties.minFlow
+      });
       redge.fake = true;
       edge.redge = redge;
       redge.redge = edge;
@@ -106,31 +113,58 @@ module.exports = function() {
 
       return _.last(this.edges);
     },
-    RemoveEdge: function(source, sink){
+    RemoveEdge: function(source, sink) {
       source = this.FindVertex(source);
       sink = this.FindVertex(sink);
 
-      if( !this.edges.length || !source || !sink || sink.name == source.name || !this.FindEdge(source.name, sink.name)){
-          return false;
+      if (!this.edges.length || !source || !sink || sink.name == source.name || !this.FindEdge(source.name, sink.name)) {
+        return false;
       }
 
-      source.adjacents.splice(_.findIndex(source.adjacents, function(edge){
-        if(!edge.fake && edge.sink.name == sink.name) edge.redge = null;
+      source.adjacents.splice(_.findIndex(source.adjacents, function(edge) {
+        if (!edge.fake && edge.sink.name == sink.name) edge.redge = null;
         return !!edge.redge;
       }), 1);
 
-      sink.adjacents.splice(_.findIndex(sink.adjacents, function(edge){
-        if(edge.fake && edge.source.name == sink.name) edge.redge = null;
+      sink.adjacents.splice(_.findIndex(sink.adjacents, function(edge) {
+        if (edge.fake && edge.source.name == sink.name) edge.redge = null;
         return !!edge.redge;
       }), 1);
 
-      this.edges.splice(_.findIndex(this.edges, function(edge){
+      this.edges.splice(_.findIndex(this.edges, function(edge) {
         return edge.source.name == source.name && edge.sink.name == sink.name;
       }), 1);
 
       return true;
+    },
+    //////////////////////////////////////
+    IsBipartite: function() {
+      if (!this.vertices.length) return false;
+
+      var startNode = this.vertices[0];
+      startNode.color = 1;
+
+      var queue = [],
+        result = true;
+
+      queue.push(startNode);
+      while (queue.length > 0 && result) {
+        var v = queue.shift();
+        _.forEach(v.adjacents, function(edge){
+            if(edge.sink.color == -1){
+                edge.sink.color = 1 - v.color;
+                edge.color = 1;
+                queue.push(edge.sink);
+            }else if(edge.sink.color == v.color){
+                result = false;
+            }
+        });
+      }
+
+      return result;
     }
-  };
+    //////////////////////////////////////
+  }
 
   function newGraph() {
     return new Graph();

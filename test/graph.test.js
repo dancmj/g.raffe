@@ -18,7 +18,7 @@ describe('#graffe.BE.js', function() {
         expect(vertex.distanceFromRoot).to.equal(0);
         expect(vertex.maxFlow).to.equal(null);
         expect(vertex.minFlow).to.equal(0);
-        expect(vertex.discoveryLabel).to.equal(-1);
+        expect(vertex.color).to.equal(-1);
         expect(vertex.property).to.deep.equal({
           key: Infinity,
           parent: null,
@@ -132,7 +132,7 @@ describe('#graffe.BE.js', function() {
         expect(edge.redge.source).to.equal(g.FindVertex('B'));
         expect(edge.redge.sink).to.equal(g.FindVertex('A'));
         expect(edge.fake).to.be.false;
-        expect(edge.discoveryLabel).to.equal(-1);
+        expect(edge.color).to.equal(-1);
         expect(vertexA.adjacents, 'A ->').to.have.lengthOf(2);
         expect(vertexB.adjacents, 'B ->').to.have.lengthOf(1);
         expect(vertexC.adjacents, 'C ->').to.have.lengthOf(1);
@@ -234,6 +234,29 @@ describe('#graffe.BE.js', function() {
   });
 
   context('#Graph', function() {
-
+    describe('#IsBipartite', function(){
+      var isBipartite;
+      it('should return false if graph is empty', function(){
+        isBipartite = g.IsBipartite();
+        expect(isBipartite).to.be.false;
+      });
+      it('should return true if graph is Bipartite', function(){
+        g.AddVertex('A');
+        g.AddEdge('B', 'A');
+        g.AddEdge('C', 'A');
+        g.AddEdge('C', 'D');
+        g.AddEdge('D', 'B');
+        isBipartite = g.IsBipartite();
+        expect(isBipartite).to.be.true;
+      });
+      it('should return false if graph isn\'t Bipartite', function(){
+        g.AddVertex('A');
+        g.AddEdge('B', 'A');
+        g.AddEdge('C', 'A');
+        g.AddEdge('C', 'B');
+        isBipartite = g.IsBipartite();
+        expect(isBipartite).to.be.false;
+      });
+    });
   });
 });

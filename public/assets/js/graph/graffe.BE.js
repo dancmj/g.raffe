@@ -187,6 +187,22 @@ module.exports = function() {
       };
 
       return true;
+    },
+    DFS: function(currentVertex){
+      currentVertex = this.FindVertex(currentVertex), self = this;
+      if(!currentVertex) return false;
+
+      currentVertex.color = 'black';
+      _.forEach(currentVertex.adjacents, function(edge){
+        if(edge.sink.color == -1 && !(edge.fake && self.directed)){
+          edge.color = 'path';
+          edge.redge.color = 'path';
+          edge.sink.distanceFromRoot = currentVertex.distanceFromRoot + 1;
+          self.DFS(edge.sink.name);
+        }
+      });
+
+      return true;
     }
     //////////////////////////////////////
   }

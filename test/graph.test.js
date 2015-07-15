@@ -1,6 +1,6 @@
 var Graffe = require('../public/assets/js/graph/graffe.BE.js');
 
-describe('#graffe.BE.js', function() {
+describe('#giraffe.js', function() {
   var graffe = new Graffe();
   var g;
 
@@ -49,13 +49,17 @@ describe('#graffe.BE.js', function() {
       beforeEach(function(){
         g.AddVertex('A');
       });
-      it('should find vertex', function(){
+      it('should return true if vertex is found', function(){
         var vertexAFound = g.FindVertex('A');
         expect(vertexAFound).to.be.ok;
       });
-      it('should not find vertex', function(){
+      it('should return false if vertex isn\'t found', function(){
         var vertexBFound = g.FindVertex('B');
         expect(vertexBFound).to.be.false;
+      });
+      it('should return false if parameters are invalid', function(){
+        var vertexFound = g.FindVertex();
+        expect(vertexFound).to.be.false;
       });
     });
     describe('#RemoveVertex', function(){
@@ -236,9 +240,9 @@ describe('#graffe.BE.js', function() {
   context('#Graph', function() {
     describe('#IsBipartite', function(){
       var isBipartite;
-      it('should return false if graph is empty', function(){
+      it('should return true if graph is empty', function(){
         isBipartite = g.IsBipartite();
-        expect(isBipartite).to.be.false;
+        expect(isBipartite).to.be.true;
       });
       it('should return true if graph is Bipartite', function(){
         g.AddVertex('A');
@@ -256,6 +260,100 @@ describe('#graffe.BE.js', function() {
         g.AddEdge('C', 'B');
         isBipartite = g.IsBipartite();
         expect(isBipartite).to.be.false;
+      });
+    });
+    describe('#BreadthFirstSearch', function(){
+      it('should return false if startNode is not found', function(){
+        var successfulBFS = g.BFS('M');
+        expect(successfulBFS).to.be.false;
+      });
+      context('Directed Graph', function(){
+        it('should return a tree if BFS is completed successfully', function(){
+          var edgeAB = g.AddEdge('A', 'B'),//
+              edgeAE = g.AddEdge('A', 'E'),//    A - B   C - D
+              edgeBF = g.AddEdge('B', 'F'),//    |   | / | / |   GRAPH
+              edgeCD = g.AddEdge('C', 'D'),//    E   F - G - H
+              edgeCG = g.AddEdge('C', 'G'),
+              edgeCF = g.AddEdge('C', 'F'),
+              edgeDH = g.AddEdge('D', 'H'),//    1 - 0   2 - 3
+              edgeDG = g.AddEdge('D', 'G'),//    |   | / | / |  EXPECTED
+              edgeFG = g.AddEdge('F', 'G'),//    2   1 - 2 - 3  DISTANCE
+              edgeGH = g.AddEdge('G', 'H');
+          g.directed = false;
+
+          var successfulBFS = g.BFS('B');
+          expect(successfulBFS).to.be.true;
+          expect(g.FindVertex('A').distanceFromRoot, 'vertex A distance').to.equal(1);
+          expect(g.FindVertex('B').distanceFromRoot, 'vertex B distance').to.equal(0);
+          expect(g.FindVertex('C').distanceFromRoot, 'vertex C distance').to.equal(2);
+          expect(g.FindVertex('D').distanceFromRoot, 'vertex D distance').to.equal(3);
+          expect(g.FindVertex('E').distanceFromRoot, 'vertex E distance').to.equal(2);
+          expect(g.FindVertex('F').distanceFromRoot, 'vertex F distance').to.equal(1);
+          expect(g.FindVertex('G').distanceFromRoot, 'vertex G distance').to.equal(2);
+          expect(g.FindVertex('H').distanceFromRoot, 'vertex H distance').to.equal(3);
+
+          expect(g.FindVertex('A').color, 'vertex A color').to.equal('black');
+          expect(g.FindVertex('B').color, 'vertex B color').to.equal('black');
+          expect(g.FindVertex('C').color, 'vertex C color').to.equal('black');
+          expect(g.FindVertex('D').color, 'vertex D color').to.equal('black');
+          expect(g.FindVertex('E').color, 'vertex E color').to.equal('black');
+          expect(g.FindVertex('F').color, 'vertex F color').to.equal('black');
+          expect(g.FindVertex('G').color, 'vertex G color').to.equal('black');
+          expect(g.FindVertex('H').color, 'vertex H color').to.equal('black');
+
+          expect(edgeAB.color, 'edge A - B').to.equal('path');
+          expect(edgeAE.color, 'edge A - E').to.equal('path');
+          expect(edgeBF.color, 'edge B - F').to.equal('path');
+          expect(edgeCD.color, 'edge C - D').to.equal('path');
+          expect(edgeCG.color, 'edge C - G').to.equal(-1);
+          expect(edgeCF.color, 'edge C - F').to.equal('path');
+          expect(edgeDH.color, 'edge D - H').to.equal(-1);
+          expect(edgeDG.color, 'edge D - G').to.equal(-1);
+          expect(edgeFG.color, 'edge F - G').to.equal('path');
+          expect(edgeGH.color, 'edge G - H').to.equal('path');
+        });
+      });
+      context('Undirected Graph', function(){
+        it('should return a tree if BFS is completed successfully', function(){
+          var edgeAB = g.AddEdge('A', 'B'),
+              edgeAE = g.AddEdge('A', 'E'),//    A > B   C < D
+              edgeBF = g.AddEdge('B', 'F'),//    v   v   v   ^   GRAPH
+              edgeDC = g.AddEdge('D', 'C'),//    E   F > G > H
+              edgeCG = g.AddEdge('C', 'G'),
+              edgeHD = g.AddEdge('H', 'D'),//    0 - 0   5 - 4
+              edgeGH = g.AddEdge('G', 'H'),//    |   |   |   |  EXPECTED
+              edgeFG = g.AddEdge('F', 'G');//    0   1 - 2 - 3  DISTANCE
+          g.directed = true;
+
+          var successfulBFS = g.BFS('B');
+          expect(successfulBFS).to.be.true;
+          expect(g.FindVertex('A').distanceFromRoot,'vertex A distance').to.equal(0);
+          expect(g.FindVertex('B').distanceFromRoot,'vertex B distance').to.equal(0);
+          expect(g.FindVertex('C').distanceFromRoot,'vertex C distance').to.equal(5);
+          expect(g.FindVertex('D').distanceFromRoot,'vertex D distance').to.equal(4);
+          expect(g.FindVertex('E').distanceFromRoot,'vertex E distance').to.equal(0);
+          expect(g.FindVertex('F').distanceFromRoot,'vertex F distance').to.equal(1);
+          expect(g.FindVertex('G').distanceFromRoot,'vertex G distance').to.equal(2);
+          expect(g.FindVertex('H').distanceFromRoot,'vertex H distance').to.equal(3);
+
+          expect(g.FindVertex('A').color, 'vertex A color').to.equal(-1);
+          expect(g.FindVertex('B').color, 'vertex B color').to.equal('black');
+          expect(g.FindVertex('C').color, 'vertex C color').to.equal('black');
+          expect(g.FindVertex('D').color, 'vertex D color').to.equal('black');
+          expect(g.FindVertex('E').color, 'vertex E color').to.equal(-1);
+          expect(g.FindVertex('F').color, 'vertex F color').to.equal('black');
+          expect(g.FindVertex('G').color, 'vertex G color').to.equal('black');
+          expect(g.FindVertex('H').color, 'vertex H color').to.equal('black');
+
+          expect(edgeAB.color, 'edge A - B').to.equal(-1);
+          expect(edgeAE.color, 'edge A - E').to.equal(-1);
+          expect(edgeBF.color, 'edge B - F').to.equal('path');
+          expect(edgeDC.color, 'edge D - C').to.equal('path');
+          expect(edgeCG.color, 'edge C - G').to.equal(-1);
+          expect(edgeHD.color, 'edge H - D').to.equal('path');
+          expect(edgeGH.color, 'edge G - H').to.equal('path');
+          expect(edgeFG.color, 'edge F - G').to.equal('path');
+        });
       });
     });
   });

@@ -8,7 +8,7 @@ module.exports = function() {
     this.distanceFromRoot = 0;
     this.maxFlow = null;
     this.minFlow = 0;
-    this.color = -1;
+    this.color = -1; // -1 -> unexplored ; path -> treePath ; black -> explored ; gray -> on queue ;
     this.property = {
       key: Infinity,
       parent: null,
@@ -139,7 +139,7 @@ module.exports = function() {
     },
     //////////////////////////////////////
     IsBipartite: function() {
-      if (!this.vertices.length) return false;
+      if (!this.vertices.length || !this.edges.length) return true;
 
       var startNode = this.vertices[0];
       startNode.color = 1;
@@ -153,7 +153,6 @@ module.exports = function() {
         _.forEach(v.adjacents, function(edge){
             if(edge.sink.color == -1){
                 edge.sink.color = 1 - v.color;
-                edge.color = 1;
                 queue.push(edge.sink);
             }else if(edge.sink.color == v.color){
                 result = false;
@@ -162,6 +161,32 @@ module.exports = function() {
       }
 
       return result;
+    },
+    BFS: function(startNode){
+      startNode = this.FindVertex(startNode);
+      if(!startNode) return false;
+
+      startNode.color = 'gray';
+
+      var queue = [], self = this;
+      queue.push(startNode);
+
+      while(queue.length > 0){
+        var v = queue.shift();
+
+        _.forEach(v.adjacents, function(edge){
+          if(edge.sink.color == -1 && !(edge.fake && self.directed)){
+            edge.color = 'path';
+            edge.redge.color = 'path';
+            edge.sink.distanceFromRoot = v.distanceFromRoot + 1;
+            edge.sink.color = 'gray';
+            queue.push(edge.sink);
+          }
+        });
+        v.color = 'black';
+      };
+
+      return true;
     }
     //////////////////////////////////////
   }

@@ -9,7 +9,7 @@ module.exports = function() {
     this.maxFlow = null;
     this.minFlow = 0;
     this.color = -1; // -1 -> unexplored ; path -> treePath ; black -> explored ; gray -> on queue ;
-    this.property = {
+    this.tag = {
       key: Infinity,
       parent: null,
       edge: null
@@ -141,13 +141,13 @@ module.exports = function() {
     IsBipartite: function() {
       if (!this.vertices.length || !this.edges.length) return true;
 
-      var startNode = this.vertices[0];
-      startNode.color = 1;
+      var startVertex = this.vertices[0];
+      startVertex.color = 1;
 
       var queue = [],
         result = true;
 
-      queue.push(startNode);
+      queue.push(startVertex);
       while (queue.length > 0 && result) {
         var v = queue.shift();
         _.forEach(v.adjacents, function(edge){
@@ -162,14 +162,14 @@ module.exports = function() {
 
       return result;
     },
-    BFS: function(startNode){
-      startNode = this.FindVertex(startNode);
-      if(!startNode) return false;
+    BFS: function(startVertex){
+      startVertex = this.FindVertex(startVertex);
+      if(!startVertex) return false;
 
-      startNode.color = 'gray';
+      startVertex.color = 'gray';
 
       var queue = [], self = this;
-      queue.push(startNode);
+      queue.push(startVertex);
 
       while(queue.length > 0){
         var v = queue.shift();
@@ -199,6 +199,38 @@ module.exports = function() {
           edge.redge.color = 'path';
           edge.sink.distanceFromRoot = currentVertex.distanceFromRoot + 1;
           self.DFS(edge.sink.name);
+        }
+      });
+
+      return true;
+    },
+    PRIM: function(startVertex){
+      startVertex = this.FindVertex(startVertex);
+      if(!startVertex) return false;
+
+      startVertex.tag.key = 0;
+
+      var heap = binaryHeap.create(function(vertex){return vertex.tag.key}), self = this;
+      heap.push(startVertex);
+
+      while(heap.content.length > 0){
+        v = heap.pop();
+        v.color = 'black';
+
+        _.forEach(v.adjacents, function(edge){
+          if(edge.sink.color == -1 && !(edge.fake && self.directed)){
+            if(edge.fake) edge.cost = edge.redge.cost;
+            if(edge.sink.color != 'black' && edge.cost < edge.sink.tag.key){
+              edge.sink.tag = {key: edge.cost, parent: v, edge: edge};
+              heap.push(edge.sink);
+            }
+          }
+        });
+      }
+
+      _.forEach(self.vertices, function(vertex){
+        if(vertex.tag.edge != null){
+          vertex.tag.edge.color = vertex.tag.edge.redge.color = 'path';
         }
       });
 

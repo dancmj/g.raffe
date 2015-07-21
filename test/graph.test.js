@@ -19,7 +19,7 @@ describe('#giraffe.js', function() {
         expect(vertex.maxFlow).to.equal(null);
         expect(vertex.minFlow).to.equal(0);
         expect(vertex.color).to.equal(-1);
-        expect(vertex.property).to.deep.equal({
+        expect(vertex.tag).to.deep.equal({
           key: Infinity,
           parent: null,
           edge: null
@@ -161,7 +161,7 @@ describe('#giraffe.js', function() {
         expect(edge.flow, 'flow').to.equal(2);
         expect(g.edges).to.have.lengthOf(1);
       });
-      it('should change property to default value if property is invalid', function() {
+      it('should change tag to default value if tag is invalid', function() {
         var properties = {
           cost: "test",
           maxFlow: "test",
@@ -263,7 +263,7 @@ describe('#giraffe.js', function() {
       });
     });
     describe('#BreadthFirstSearch()', function(){
-      it('should return false if startNode is not found', function(){
+      it('should return false if start vertex is not found', function(){
         var successfulBFS = g.BFS('M');
         expect(successfulBFS).to.be.false;
       });
@@ -448,6 +448,26 @@ describe('#giraffe.js', function() {
           expect(edgeFG.color, 'edge F - G').to.equal('path');
           expect(edgeGH.color, 'edge G - H').to.equal('path');
         });
+      });
+    });
+    describe('#Prim\'s()', function(){
+      it('should return false if vertex is not found', function(){
+        var successfulPRIM = g.PRIM('K');
+        expect(successfulPRIM).to.be.false;
+      });
+      it('should create a tree if completed successfully', function(){
+        var edgeAB = g.AddEdge('A', 'B', {cost: 2});//
+        var edgeAD = g.AddEdge('A', 'D', {cost: 1});//  A - B        |    A - B
+        var edgeBD = g.AddEdge('B', 'D', {cost: 2});//    \ | GRAPH  |      \   EXPECTED
+        var edgeCD = g.AddEdge('C', 'D', {cost: 3});//  C - D        |    C - D
+        g.directed = false;
+
+        var successfulPRIM = g.PRIM('A');
+        expect(successfulPRIM).to.be.true;
+        expect(edgeAB.color, 'Edge AB').to.equal('path');
+        expect(edgeAD.color, 'Edge AD').to.equal('path');
+        expect(edgeBD.color, 'Edge BD').to.equal(-1);
+        expect(edgeCD.color, 'Edge CD').to.equal('path');
       });
     });
   });

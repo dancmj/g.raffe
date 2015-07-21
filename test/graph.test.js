@@ -265,7 +265,7 @@ describe('#giraffe.js', function() {
     describe('#BreadthFirstSearch()', function(){
       it('should return false if start vertex is not found', function(){
         var successfulBFS = g.BFS('M');
-        expect(successfulBFS).to.be.false;
+        expect(successfulBFS, 'Breadth First Search success').to.be.false;
       });
       context('Undirected Graph', function(){
         it('should create a tree if BFS is completed successfully', function(){
@@ -359,7 +359,7 @@ describe('#giraffe.js', function() {
     describe('#DepthFirstSearch()', function(){
       it('should return false if startNode is not found', function(){
         var successfulDFS = g.DFS('A');
-        expect(successfulDFS).to.be.false;
+        expect(successfulDFS, 'Depth First Search success').to.be.false;
       });
       context('Undirected Graph', function(){
         it('should create a tree if DFS is completed successfully', function(){
@@ -376,7 +376,7 @@ describe('#giraffe.js', function() {
           g.directed = false;
 
           var successfulDFS = g.DFS('A');
-          expect(successfulDFS).to.be.true;
+          expect(successfulDFS, 'Depth First Search success').to.be.true;
           expect(g.FindVertex('A').distanceFromRoot, 'vertex A distance').to.equal(0);
           expect(g.FindVertex('B').distanceFromRoot, 'vertex B distance').to.equal(1);
           expect(g.FindVertex('C').distanceFromRoot, 'vertex C distance').to.equal(3);
@@ -395,16 +395,16 @@ describe('#giraffe.js', function() {
           expect(g.FindVertex('G').color, 'vertex G color').to.equal('black');
           expect(g.FindVertex('H').color, 'vertex H color').to.equal('black');
 
-          expect(edgeAB.color, 'edge A - B').to.equal('path');
-          expect(edgeAE.color, 'edge A - E').to.equal('path');
-          expect(edgeBF.color, 'edge B - F').to.equal('path');
-          expect(edgeCD.color, 'edge C - D').to.equal('path');
-          expect(edgeCG.color, 'edge C - G').to.equal(-1);
-          expect(edgeCF.color, 'edge C - F').to.equal('path');
-          expect(edgeDH.color, 'edge D - H').to.equal('path');
-          expect(edgeDG.color, 'edge D - G').to.equal(-1);
-          expect(edgeFG.color, 'edge F - G').to.equal(-1);
-          expect(edgeGH.color, 'edge G - H').to.equal('path');
+          expect(edgeAB.color, 'Edge A - B').to.equal('path');
+          expect(edgeAE.color, 'Edge A - E').to.equal('path');
+          expect(edgeBF.color, 'Edge B - F').to.equal('path');
+          expect(edgeCD.color, 'Edge C - D').to.equal('path');
+          expect(edgeCG.color, 'Edge C - G').to.equal(-1);
+          expect(edgeCF.color, 'Edge C - F').to.equal('path');
+          expect(edgeDH.color, 'Edge D - H').to.equal('path');
+          expect(edgeDG.color, 'Edge D - G').to.equal(-1);
+          expect(edgeFG.color, 'Edge F - G').to.equal(-1);
+          expect(edgeGH.color, 'Edge G - H').to.equal('path');
         });
       });
       context('Directed Graph', function(){
@@ -420,7 +420,7 @@ describe('#giraffe.js', function() {
           g.directed = true;
 
           var successfulDFS = g.DFS('A');
-          expect(successfulDFS).to.be.true;
+          expect(successfulDFS, 'Depth First Search success').to.be.true;
           expect(g.FindVertex('A').distanceFromRoot, 'vertex A distance').to.equal(0);
           expect(g.FindVertex('B').distanceFromRoot, 'vertex B distance').to.equal(1);
           expect(g.FindVertex('C').distanceFromRoot, 'vertex C distance').to.equal(0);
@@ -439,36 +439,44 @@ describe('#giraffe.js', function() {
           expect(g.FindVertex('G').color, 'vertex G color').to.equal('black');
           expect(g.FindVertex('H').color, 'vertex H color').to.equal('black');
 
-          expect(edgeAB.color, 'edge A - B').to.equal('path');
-          expect(edgeAE.color, 'edge A - E').to.equal('path');
-          expect(edgeBF.color, 'edge B - F').to.equal('path');
-          expect(edgeCD.color, 'edge C - D').to.equal(-1);
-          expect(edgeCG.color, 'edge C - G').to.equal(-1);
-          expect(edgeDH.color, 'edge D - H').to.equal(-1);
-          expect(edgeFG.color, 'edge F - G').to.equal('path');
-          expect(edgeGH.color, 'edge G - H').to.equal('path');
+          expect(edgeAB.color, 'Edge A - B').to.equal('path');
+          expect(edgeAE.color, 'Edge A - E').to.equal('path');
+          expect(edgeBF.color, 'Edge B - F').to.equal('path');
+          expect(edgeCD.color, 'Edge C - D').to.equal(-1);
+          expect(edgeCG.color, 'Edge C - G').to.equal(-1);
+          expect(edgeDH.color, 'Edge D - H').to.equal(-1);
+          expect(edgeFG.color, 'Edge F - G').to.equal('path');
+          expect(edgeGH.color, 'Edge G - H').to.equal('path');
         });
       });
     });
     describe('#Prim\'s()', function(){
       it('should return false if vertex is not found', function(){
         var successfulPRIM = g.PRIM('K');
-        expect(successfulPRIM).to.be.false;
+        expect(successfulPRIM, 'Prim\'s success').to.be.false;
       });
       it('should create a tree if completed successfully', function(){
         var edgeAB = g.AddEdge('A', 'B', {cost: 2});//
         var edgeAD = g.AddEdge('A', 'D', {cost: 1});//  A - B        |    A - B
         var edgeBD = g.AddEdge('B', 'D', {cost: 2});//    \ | GRAPH  |      \   EXPECTED
         var edgeCD = g.AddEdge('C', 'D', {cost: 3});//  C - D        |    C - D
-        g.directed = false;
 
         var successfulPRIM = g.PRIM('A');
-        expect(successfulPRIM).to.be.true;
-        expect(edgeAB.color, 'Edge AB').to.equal('path');
-        expect(edgeAD.color, 'Edge AD').to.equal('path');
-        expect(edgeBD.color, 'Edge BD').to.equal(-1);
-        expect(edgeCD.color, 'Edge CD').to.equal('path');
+        expect(successfulPRIM, 'Prim\'s success').to.be.true;
+        expect(edgeAB.color, 'Edge A - B').to.equal('path');
+        expect(edgeAD.color, 'Edge A - D').to.equal('path');
+        expect(edgeBD.color, 'Edge B - D').to.equal(-1);
+        expect(edgeCD.color, 'Edge C - D').to.equal('path');
       });
+    });
+    describe('#Kruskal\'s()', function(){
+      // ae cd ab be bc ec ed
+      // 1  2  3  4  5  6  7
+      it('should return false if no vertices or edges exist', function(){
+        var successfulKruskal = g.Kruskal();
+        expect(successfulKruskal).to.be.false;
+      });
+
     });
   });
 });

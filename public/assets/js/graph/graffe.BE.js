@@ -207,6 +207,7 @@ module.exports = function() {
     PRIM: function(startVertex){
       startVertex = this.FindVertex(startVertex);
       if(!startVertex) return false;
+      this.directed = false;
 
       startVertex.tag.key = 0;
 
@@ -218,7 +219,7 @@ module.exports = function() {
         v.color = 'black';
 
         _.forEach(v.adjacents, function(edge){
-          if(edge.sink.color == -1 && !(edge.fake && self.directed)){
+          if(edge.sink.color == -1){
             if(edge.fake) edge.cost = edge.redge.cost;
             if(edge.sink.color != 'black' && edge.cost < edge.sink.tag.key){
               edge.sink.tag = {key: edge.cost, parent: v, edge: edge};

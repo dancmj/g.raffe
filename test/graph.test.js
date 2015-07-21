@@ -455,6 +455,16 @@ describe('#giraffe.js', function() {
         var successfulPRIM = g.PRIM('K');
         expect(successfulPRIM, 'Prim\'s success').to.be.false;
       });
+      it('should change the graph to be undirected', function(){
+        g.AddEdge('A', 'B', {cost: 2});
+        g.AddEdge('A', 'D', {cost: 1});
+        g.AddEdge('B', 'D', {cost: 2});
+        g.AddEdge('C', 'D', {cost: 3});
+        g.directed = true;
+        g.PRIM('A');
+
+        expect(g.directed).to.be.false;
+      });
       it('should create a tree if completed successfully', function(){
         var edgeAB = g.AddEdge('A', 'B', {cost: 2});//
         var edgeAD = g.AddEdge('A', 'D', {cost: 1});//  A - B        |    A - B

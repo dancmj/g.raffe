@@ -531,5 +531,8 @@ describe('#giraffe.js', function() {
         expect(edgeFG.color, 'Edge F - G').to.equal(-1);      // cost: 7
       });
     });
+    describe('#Dijkstra\'s()', function(){
+
+    });
   });
 });

@@ -466,10 +466,10 @@ describe('#giraffe.js', function() {
         expect(g.directed).to.be.false;
       });
       it('should create a tree if completed successfully', function(){
-        var edgeAB = g.AddEdge('A', 'B', {cost: 2});//
-        var edgeAD = g.AddEdge('A', 'D', {cost: 1});//  A - B        |    A - B
-        var edgeBD = g.AddEdge('B', 'D', {cost: 2});//    \ | GRAPH  |      \   EXPECTED
-        var edgeCD = g.AddEdge('C', 'D', {cost: 3});//  C - D        |    C - D
+        var edgeAB = g.AddEdge('A', 'B', {cost: 2}),//
+            edgeAD = g.AddEdge('A', 'D', {cost: 1}),//  A - B        |    A - B
+            edgeBD = g.AddEdge('B', 'D', {cost: 2}),//    \ | GRAPH  |      \   EXPECTED
+            edgeCD = g.AddEdge('C', 'D', {cost: 3});//  C - D        |    C - D
 
         var successfulPRIM = g.PRIM('A');
         expect(successfulPRIM, 'Prim\'s success').to.be.true;
@@ -480,13 +480,56 @@ describe('#giraffe.js', function() {
       });
     });
     describe('#Kruskal\'s()', function(){
-      // ae cd ab be bc ec ed
-      // 1  2  3  4  5  6  7
       it('should return false if no vertices or edges exist', function(){
         var successfulKruskal = g.Kruskal();
         expect(successfulKruskal).to.be.false;
       });
+      it('should change the graph to be undirected', function(){
+        g.AddEdge('A', 'B', {cost: 2});
+        g.AddEdge('A', 'D', {cost: 1});
+        g.AddEdge('B', 'D', {cost: 2});
+        g.AddEdge('C', 'D', {cost: 3});
+        g.directed = true;
+        g.Kruskal();
 
+        expect(g.directed).to.be.false;
+      });
+      it('should create a forest if completed successfully', function(){
+        var edgeED = g.AddEdge('E', 'D', {cost: 7}),
+            edgeAE = g.AddEdge('A', 'E', {cost: 1}),
+            edgeCD = g.AddEdge('C', 'D', {cost: 2}),
+            edgeEC = g.AddEdge('E', 'C', {cost: 6}),
+            edgeBE = g.AddEdge('B', 'E', {cost: 4}),
+            edgeBC = g.AddEdge('B', 'C', {cost: 5}),
+            edgeAB = g.AddEdge('A', 'B', {cost: 3}),
+
+            edgeFG = g.AddEdge('F', 'G', {cost: 7}),
+            edgeHF = g.AddEdge('H', 'F', {cost: 1}),
+            edgeIG = g.AddEdge('I', 'G', {cost: 2}),
+            edgeFI = g.AddEdge('F', 'I', {cost: 6}),
+            edgeJF = g.AddEdge('J', 'F', {cost: 4}),
+            edgeJI = g.AddEdge('J', 'I', {cost: 5}),
+            edgeHJ = g.AddEdge('H', 'J', {cost: 3});
+
+        var successfulKruskal = g.Kruskal();
+        expect(successfulKruskal).to.be.true;
+        //TREE 1
+        expect(edgeAE.color, 'Edge A - E').to.equal('path');  // cost: 1
+        expect(edgeCD.color, 'Edge C - D').to.equal('path');  // cost: 2
+        expect(edgeAB.color, 'Edge A - B').to.equal('path');  // cost: 3
+        expect(edgeBE.color, 'Edge B - E').to.equal(-1);      // cost: 4
+        expect(edgeBC.color, 'Edge B - C').to.equal('path');  // cost: 5
+        expect(edgeEC.color, 'Edge E - C').to.equal(-1);      // cost: 6
+        expect(edgeED.color, 'Edge E - D').to.equal(-1);      // cost: 7
+        //TREE 2
+        expect(edgeHF.color, 'Edge H - F').to.equal('path');  // cost: 1
+        expect(edgeIG.color, 'Edge I - G').to.equal('path');  // cost: 2
+        expect(edgeHJ.color, 'Edge H - J').to.equal('path');  // cost: 3
+        expect(edgeJF.color, 'Edge J - F').to.equal(-1);      // cost: 4
+        expect(edgeJI.color, 'Edge J - I').to.equal('path');  // cost: 5
+        expect(edgeFI.color, 'Edge F - I').to.equal(-1);      // cost: 6
+        expect(edgeFG.color, 'Edge F - G').to.equal(-1);      // cost: 7
+      });
     });
   });
 });

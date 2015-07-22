@@ -211,7 +211,10 @@ module.exports = function() {
 
       startVertex.tag.key = 0;
 
-      var heap = binaryHeap.create(function(vertex){return vertex.tag.key}), self = this;
+      var heap = binaryHeap.create(function(vertex){
+            return vertex.tag.key
+          });
+
       heap.push(startVertex);
 
       while(heap.content.length > 0){
@@ -229,11 +232,47 @@ module.exports = function() {
         });
       }
 
-      _.forEach(self.vertices, function(vertex){
+      _.forEach(this.vertices, function(vertex){
         if(vertex.tag.edge != null){
           vertex.tag.edge.color = vertex.tag.edge.redge.color = 'path';
         }
       });
+
+      return true;
+    },
+    Kruskal: function(){
+      if(!this.vertices.length || !this.edges.length) return false;
+
+      this.directed = false;
+
+      var counter = 0, colorHelper;
+      var heap = binaryHeap.create(function(edge){
+            return edge.cost;
+          });
+
+     _.forEach(this.edges, function(edge){
+       heap.push(edge);
+     });
+
+     _.forEach(this.vertices, function(vertex, i){
+       vertex.color = i;
+     });
+
+     while(heap.content.length > 0 && counter < this.vertices.length - 1){
+       var e = heap.pop();
+
+       if(e.source.color != e.sink.color){
+         colorHelper = e.sink.color;
+         e.color = 'path';
+
+         _.forEach(this.vertices, function(vertex){
+           if(vertex.color == colorHelper){
+             vertex.color = e.source.color;
+           }
+         });
+         counter++;
+       }
+     }
 
       return true;
     }

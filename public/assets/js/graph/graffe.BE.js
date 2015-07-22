@@ -275,6 +275,9 @@ module.exports = function() {
      }
 
       return true;
+    },
+    Dijkstra: function(startVertex, endVertex){
+
     }
     //////////////////////////////////////
   }

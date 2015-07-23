@@ -47,10 +47,10 @@ describe('#giraffe.js', function() {
     });
     describe('#FindVertex', function(){
       beforeEach(function(){
-        g.AddVertex('A');
+        g.AddVertex(1);
       });
       it('should return true if vertex is found', function(){
-        var vertexAFound = g.FindVertex('A');
+        var vertexAFound = g.FindVertex(1);
         expect(vertexAFound).to.be.ok;
       });
       it('should return false if vertex isn\'t found', function(){
@@ -532,7 +532,135 @@ describe('#giraffe.js', function() {
       });
     });
     describe('#Dijkstra\'s()', function(){
+      it('should return false if either of the nodes don\'t exist', function(){
+        g.AddEdge('C', 'D');
+        var successfulDijkstra1 = g.Dijkstra();
+        var successfulDijkstra2 = g.Dijkstra('A');
+        var successfulDijkstra3 = g.Dijkstra('C', 'B');
 
+        expect(successfulDijkstra1, 'no parameters received').to.be.false;
+        expect(successfulDijkstra2, 'end vertex undefined').to.be.false;
+        expect(successfulDijkstra3, 'C exists, B doesn\'t exist').to.be.false;
+      });
+      it('should return false if no path exists between the vertices', function(){
+        g.AddEdge('A', 'B');
+        g.AddVertex('C');
+
+        var successfulDijkstra = g.Dijkstra('A', 'C');
+        expect(successfulDijkstra).to.be.false;
+      });
+      context('Undirected Graph', function(){
+        context('with Positive Costs', function(){
+          it('should find the shortest path between two vertices', function(){
+            var vertex1 = g.AddVertex('1'),
+                vertex2 = g.AddVertex('2'),
+                vertex3 = g.AddVertex('3'),
+                vertex4 = g.AddVertex('4'),
+                vertex5 = g.AddVertex('5'),
+                vertex5 = g.AddVertex('6');
+
+            var edge12 = g.AddEdge('1', '2', { cost: 7 }),
+                edge13 = g.AddEdge('1', '3', { cost: 9 }),
+                edge16 = g.AddEdge('1', '6', { cost: 14 }),
+                edge23 = g.AddEdge('2', '3', { cost: 10 }),
+                edge24 = g.AddEdge('2', '4', { cost: 15 }),
+                edge34 = g.AddEdge('3', '4', { cost: 11 }),
+                edge36 = g.AddEdge('3', '6', { cost: 2 }),
+                edge45 = g.AddEdge('4', '5', { cost: 6 }),
+                edge56 = g.AddEdge('5', '6', { cost: 9 });
+
+            g.directed = false;
+
+            var successfulDijkstra = g.Dijkstra('1', '5');
+            expect(successfulDijkstra).to.be.true;
+
+            expect(vertex1.color, 'Vertex 1\'s color').to.be.equal('path');
+            expect(vertex2.color, 'Vertex 2\'s color').to.be.equal('black');
+            expect(vertex3.color, 'Vertex 3\'s color').to.be.equal('path');
+            expect(vertex4.color, 'Vertex 4\'s color').to.be.equal('black');
+            expect(vertex5.color, 'Vertex 5\'s color').to.be.equal('path');
+            expect(vertex5.color, 'Vertex 6\'s color').to.be.equal('path');
+
+            expect(edge12.color, 'Edge 1 - 2').to.equal(-1);
+            expect(edge13.color, 'Edge 1 - 3').to.equal('path');
+            expect(edge16.color, 'Edge 1 - 6').to.equal(-1);
+            expect(edge23.color, 'Edge 2 - 3').to.equal(-1);
+            expect(edge24.color, 'Edge 2 - 4').to.equal(-1);
+            expect(edge34.color, 'Edge 3 - 4').to.equal(-1);
+            expect(edge36.color, 'Edge 3 - 6').to.equal('path');
+            expect(edge45.color, 'Edge 4 - 5').to.equal(-1);
+            expect(edge56.color, 'Edge 5 - 6').to.equal('path');
+          });
+        });
+        context('with Negative Costs', function(){
+          context('no negative cycles', function(){
+            it('should find the shortest path between two vertices', function(){
+
+            });
+          });
+          context('with a negative cycle', function(){
+            it('should return false if there is no solution', function(){
+
+            });
+          });
+        })
+      });
+      context('Directed Graph', function(){
+        context('with Positive Costs', function(){
+          it('should find the shortest path between two vertices', function(){
+            var vertex1 = g.AddVertex('1'),
+                vertex2 = g.AddVertex('2'),
+                vertex3 = g.AddVertex('3'),
+                vertex4 = g.AddVertex('4'),
+                vertex5 = g.AddVertex('5'),
+                vertex5 = g.AddVertex('6');
+
+            var edge12 = g.AddEdge('1', '2', { cost: 7 }),
+                edge13 = g.AddEdge('1', '3', { cost: 9 }),
+                edge16 = g.AddEdge('1', '6', { cost: 14 }),
+                edge23 = g.AddEdge('2', '3', { cost: 10 }),
+                edge24 = g.AddEdge('2', '4', { cost: 15 }),
+                edge34 = g.AddEdge('3', '4', { cost: 11 }),
+                edge36 = g.AddEdge('3', '6', { cost: 2 }),
+                edge45 = g.AddEdge('4', '5', { cost: 6 }),
+                edge56 = g.AddEdge('5', '6', { cost: 9 });
+
+            g.directed = true;
+
+            var successfulDijkstra = g.Dijkstra('1', '5');
+            expect(successfulDijkstra).to.be.true;
+
+            expect(vertex1.color, 'Vertex 1\'s color').to.be.equal('path');
+            expect(vertex2.color, 'Vertex 2\'s color').to.be.equal('black');
+            expect(vertex3.color, 'Vertex 3\'s color').to.be.equal('path');
+            expect(vertex4.color, 'Vertex 4\'s color').to.be.equal('path');
+            expect(vertex5.color, 'Vertex 5\'s color').to.be.equal('black');
+            expect(vertex5.color, 'Vertex 6\'s color').to.be.equal('black');
+
+            expect(edge12.color, 'Edge 1 - 2').to.equal(-1);
+            expect(edge13.color, 'Edge 1 - 3').to.equal('path');
+            expect(edge16.color, 'Edge 1 - 6').to.equal(-1);
+            expect(edge23.color, 'Edge 2 - 3').to.equal(-1);
+            expect(edge24.color, 'Edge 2 - 4').to.equal(-1);
+            expect(edge34.color, 'Edge 3 - 4').to.equal('path');
+            expect(edge36.color, 'Edge 3 - 6').to.equal(-1);
+            expect(edge45.color, 'Edge 4 - 5').to.equal('path');
+            expect(edge56.color, 'Edge 5 - 6').to.equal(-1);
+          });
+        });
+        context('with Negative Costs', function(){
+          context('no negative cycles', function(){
+            it('should find the shortest path between two vertices', function(){
+
+            });
+          });
+          context('with a negative cycle', function(){
+            it('should return false if there is no solution', function(){
+
+            });
+          });
+        })
+      });
     });
   });
 });

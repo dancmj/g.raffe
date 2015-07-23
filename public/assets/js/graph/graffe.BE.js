@@ -41,16 +41,21 @@ module.exports = function() {
 
   Graph.prototype = {
     FindVertex: function(name) {
+      name = typeof name === 'number' || typeof name === 'string' ? name = name + '' : name = null
+      if(!name) return false;
       return _.find(this.vertices, {
         'name': name
       }) || false;
     },
     AddVertex: function(name) {
-      if (!name) return false;
+      name = typeof name === 'number' || typeof name === 'string' ? name = name + '' : name = null
+      if(!name) return false;
+
       name = _.trunc(_.trim(name), {
         length: 10,
         omission: ''
       });
+
       var repeatedVertex = this.FindVertex(name);
       if (repeatedVertex) return repeatedVertex;
 
@@ -276,8 +281,51 @@ module.exports = function() {
 
       return true;
     },
-    Dijkstra: function(startVertex, endVertex){
+    Dijkstra: function(startVertex, goalVertex){
+      startVertex = this.FindVertex(startVertex);
+      goalVertex = this.FindVertex(goalVertex);
 
+      if(!startVertex || !goalVertex){
+        return false;
+      }
+
+      var self = this,
+          heap = binaryHeap.create(function(vertex){
+            return vertex.tag.key;
+          }),
+          path = [];
+
+      startVertex.tag.key = 0;
+      heap.push(startVertex);
+
+      while(heap.content.length > 0){
+        var v = heap.pop();
+        v.color = 'black';
+
+        _.forEach(v.adjacents, function(edge){
+          if(edge.fake) edge.cost = edge.redge.cost;
+          if(edge.sink.color != 'black' && edge.cost < edge.sink.tag.key && !(edge.fake && self.directed)){
+            var sinkTag = edge.sink.tag;
+            sinkTag.key = edge.cost + v.tag.key;
+            sinkTag.parent = v;
+            sinkTag.edge = edge;
+
+            edge.sink.distance = v.distance + 1;
+
+            heap.push(edge.sink);
+          }
+        });
+      }
+
+      var p = goalVertex;
+      while(p){
+        p.color = 'path';
+        path.unshift(p);
+        if(p.tag.edge) p.tag.edge.color = p.tag.edge.redge.color = 'path';
+        p = p.tag.parent;
+      }
+
+      return true;
     }
     //////////////////////////////////////
   }

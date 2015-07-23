@@ -325,6 +325,8 @@ module.exports = function() {
         p = p.tag.parent;
       }
 
+      if(startVertex.color !== 'path') return false;
+
       return true;
     }
     //////////////////////////////////////

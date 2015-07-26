@@ -235,6 +235,20 @@ describe('#giraffe.js', function() {
         expect(edgeRemoved5, 'edge doesn\'t exist').to.be.false;
       });
     });
+    describe('#SetColor', function(){
+      it('should change color of edge and its redge', function(){
+        var edgeAB = g.AddEdge('A', 'B'),
+            edgeCD = g.AddEdge('C', 'D');
+
+        var newColor = 'anotherColor';
+        edgeAB.setColor(newColor);
+        edgeCD.redge.setColor(newColor);
+        expect(edgeAB.color).to.equal('anotherColor');
+        expect(edgeAB.redge.color).to.equal('anotherColor');
+        expect(edgeCD.color).to.equal('anotherColor');
+        expect(edgeCD.redge.color).to.equal('anotherColor');
+      });
+    });
   });
 
   context('#Graph', function() {
@@ -595,7 +609,24 @@ describe('#giraffe.js', function() {
         context('with Negative Costs', function(){
           context('no negative cycles', function(){
             it('should find the shortest path between two vertices', function(){
+              var vertexA = g.AddVertex('A'),
+                  vertexB = g.AddVertex('B'),
+                  vertexC = g.AddVertex('C');
 
+              var edgeAB = g.AddEdge('A','B', {cost: 2}),
+                  edgeAC = g.AddEdge('A','C', {cost: 5}),
+                  edgeCB = g.AddEdge('C','B', {cost: -4});
+
+              var successfulDijkstra = g.Dijkstra('A', 'B');
+              expect(successfulDijkstra).to.be.true;
+
+              expect(vertexA.color, 'Vertex A\'s color').to.equal('path');
+              expect(vertexB.color, 'Vertex B\'s color').to.equal('path');
+              expect(vertexC.color, 'Vertex C\'s color').to.equal('path');
+
+              expect(edgeAB.color, 'Edge A - B').to.equal(-1);
+              expect(edgeAC.color, 'Edge A - C').to.equal('path');
+              expect(edgeCB.color, 'Edge C - B').to.equal('path');
             });
           });
           context('with a negative cycle', function(){
@@ -648,7 +679,7 @@ describe('#giraffe.js', function() {
             expect(edge56.color, 'Edge 5 - 6').to.equal(-1);
           });
         });
-        context('with Negative Costs', function(){
+        context.skip('with Negative Costs', function(){
           context('no negative cycles', function(){
             it('should find the shortest path between two vertices', function(){
 

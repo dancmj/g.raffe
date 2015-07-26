@@ -30,6 +30,9 @@ module.exports = function() {
     this.redge = null;
     this.fake = false;
     this.color = -1;
+    this.setColor = function(newColor){
+      this.color = this.redge.color = newColor;
+    }
   };
 
   function Graph() {
@@ -181,8 +184,7 @@ module.exports = function() {
 
         _.forEach(v.adjacents, function(edge){
           if(edge.sink.color == -1 && !(edge.fake && self.directed)){
-            edge.color = 'path';
-            edge.redge.color = 'path';
+            edge.setColor('path');
             edge.sink.distanceFromRoot = v.distanceFromRoot + 1;
             edge.sink.color = 'gray';
             queue.push(edge.sink);
@@ -200,8 +202,7 @@ module.exports = function() {
       currentVertex.color = 'black';
       _.forEach(currentVertex.adjacents, function(edge){
         if(edge.sink.color == -1 && !(edge.fake && self.directed)){
-          edge.color = 'path';
-          edge.redge.color = 'path';
+          edge.setColor('path');
           edge.sink.distanceFromRoot = currentVertex.distanceFromRoot + 1;
           self.DFS(edge.sink.name);
         }
@@ -239,7 +240,7 @@ module.exports = function() {
 
       _.forEach(this.vertices, function(vertex){
         if(vertex.tag.edge != null){
-          vertex.tag.edge.color = vertex.tag.edge.redge.color = 'path';
+          vertex.tag.edge.setColor('path');
         }
       });
 
@@ -321,11 +322,64 @@ module.exports = function() {
       while(p){
         p.color = 'path';
         path.unshift(p);
-        if(p.tag.edge) p.tag.edge.color = p.tag.edge.redge.color = 'path';
+        if(p.tag.edge) p.tag.edge.setColor('path');
         p = p.tag.parent;
       }
 
       if(startVertex.color !== 'path') return false;
+      //Reset the color of the vertices in path
+      _.forEach(path, function(vertex){
+        vertex.color = 'black';
+      });
+
+      heap = binaryHeap.create(function(edge){ return edge.cost; }); //New heap with unused edges
+      _.forEach(self.edges, function(edge){ //Iterate over non-path edges
+        edge.color !== 'path' ? heap.push(edge) : edge.setColor(-1);
+        // edge not in path? push it to heap : reset color for edge in path
+      });
+      
+      while (heap.content.length > 0) {
+        var e = heap.pop();
+
+        if (e.cost + e.source.tag.key < e.sink.tag.key) { //IF the cost will be less than the sink's key
+          ////////////////////////////////////
+          /////Check for negative cycles//////
+          ////////////////////////////////////
+          //No negcycles found, add the edge to the graph and change all the children.
+
+          e.sink.tag.edge.setColor(-1); //Revert previous edge to parent color.
+          e.sink.tag.key = e.cost + e.source.tag.key;
+          e.sink.tag.parent = e.source;
+          e.sink.tag.edge = e;
+
+          var stack = [];
+          stack.push(e.sink);
+
+          while (stack.length > 0) { //Check children's tags
+            var v = stack.pop();
+
+            _.forEach(v.adjacents, function(edge) {
+              if (edge.sink.tag.parent === v  && !(e.fake && self.directed)) {
+                stack.push(edge.sink);
+                edge.sink.distance = edge.source.distance + 1;
+                edge.sink.tag.key = edge.cost + edge.source.tag.key;
+                edge.sink.tag.parent = edge.source;
+                edge.sink.tag.edge = edge;
+              }
+            });
+          }
+        }
+      }
+
+      p = goalVertex;
+      while(p){
+        p.color = 'path';
+        path.unshift(p);
+        if(p.tag.edge) p.tag.edge.setColor('path');
+        p = p.tag.parent;
+      }
+
+
 
       return true;
     }

@@ -311,7 +311,7 @@ module.exports = function() {
             sinkTag.parent = v;
             sinkTag.edge = edge;
 
-            edge.sink.distance = v.distance + 1;
+            edge.sink.distanceFromRoot = v.distanceFromRoot + 1;
 
             heap.push(edge.sink);
           }
@@ -327,6 +327,7 @@ module.exports = function() {
       }
 
       if(startVertex.color !== 'path') return false;
+      if(!self.directed) return true; //Failsafe, Dijkstra negative CANNOT work with undirected graphs
       //Reset the color of the vertices in path
       _.forEach(path, function(vertex){
         vertex.color = 'black';
@@ -337,14 +338,23 @@ module.exports = function() {
         edge.color !== 'path' ? heap.push(edge) : edge.setColor(-1);
         // edge not in path? push it to heap : reset color for edge in path
       });
-      
+
       while (heap.content.length > 0) {
         var e = heap.pop();
 
         if (e.cost + e.source.tag.key < e.sink.tag.key) { //IF the cost will be less than the sink's key
-          ////////////////////////////////////
-          /////Check for negative cycles//////
-          ////////////////////////////////////
+          // if(e.sink.distanceFromRoot < e.source.distanceFromRoot){
+          //   var distanceLimit = e.source.distanceFromRoot - e.sink.distanceFromRoot,
+          //       temporalSource = e.source;
+          //   for(var i = 0; i < distanceLimit; i++){
+          //     counter += temporalSource.tag.edge.cost;
+          //     if(temporalSource.tag.parent == e.sink){
+          //       counter += e.cost;
+          //       return false;
+          //     }
+          //     temporalSource = temporalSource.tag.parent;
+          //   }
+          // }
           //No negcycles found, add the edge to the graph and change all the children.
 
           e.sink.tag.edge.setColor(-1); //Revert previous edge to parent color.
@@ -361,7 +371,7 @@ module.exports = function() {
             _.forEach(v.adjacents, function(edge) {
               if (edge.sink.tag.parent === v  && !(e.fake && self.directed)) {
                 stack.push(edge.sink);
-                edge.sink.distance = edge.source.distance + 1;
+                edge.sink.distanceFromRoot = edge.source.distanceFromRoot + 1;
                 edge.sink.tag.key = edge.cost + edge.source.tag.key;
                 edge.sink.tag.parent = edge.source;
                 edge.sink.tag.edge = edge;
@@ -378,8 +388,6 @@ module.exports = function() {
         if(p.tag.edge) p.tag.edge.setColor('path');
         p = p.tag.parent;
       }
-
-
 
       return true;
     }

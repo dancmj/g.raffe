@@ -564,6 +564,9 @@ describe('#giraffe.js', function() {
         expect(successfulDijkstra).to.be.false;
       });
       context('Undirected Graph', function(){
+        beforeEach(function(){
+          g.directed = false;
+        });
         context('with Positive Costs', function(){
           it('should find the shortest path between two vertices', function(){
             var vertex1 = g.AddVertex('1'),
@@ -582,8 +585,6 @@ describe('#giraffe.js', function() {
                 edge36 = g.AddEdge('3', '6', { cost: 2 }),
                 edge45 = g.AddEdge('4', '5', { cost: 6 }),
                 edge56 = g.AddEdge('5', '6', { cost: 9 });
-
-            g.directed = false;
 
             var successfulDijkstra = g.Dijkstra('1', '5');
             expect(successfulDijkstra).to.be.true;
@@ -608,30 +609,47 @@ describe('#giraffe.js', function() {
         });
         context('with Negative Costs', function(){
           context('no negative cycles', function(){
-            it('should find the shortest path between two vertices', function(){
+            it('should end prematurely not find the shortest path', function(){
               var vertexA = g.AddVertex('A'),
                   vertexB = g.AddVertex('B'),
                   vertexC = g.AddVertex('C');
 
-              var edgeAB = g.AddEdge('A','B', {cost: 2}),
-                  edgeAC = g.AddEdge('A','C', {cost: 5}),
-                  edgeCB = g.AddEdge('C','B', {cost: -4});
+              var edgeAB = g.AddEdge('A','B', {cost: -2}),
+                  edgeAC = g.AddEdge('A','C', {cost: 3}),
+                  edgeCB = g.AddEdge('C','B', {cost: -2});
 
               var successfulDijkstra = g.Dijkstra('A', 'B');
               expect(successfulDijkstra).to.be.true;
 
               expect(vertexA.color, 'Vertex A\'s color').to.equal('path');
               expect(vertexB.color, 'Vertex B\'s color').to.equal('path');
-              expect(vertexC.color, 'Vertex C\'s color').to.equal('path');
+              expect(vertexC.color, 'Vertex C\'s color').to.equal('black');
 
-              expect(edgeAB.color, 'Edge A - B').to.equal(-1);
-              expect(edgeAC.color, 'Edge A - C').to.equal('path');
-              expect(edgeCB.color, 'Edge C - B').to.equal('path');
+              expect(edgeAB.color, 'Edge A - B').to.equal('path');
+              expect(edgeAC.color, 'Edge A - C').to.equal(-1);
+              expect(edgeCB.color, 'Edge C - B').to.equal(-1);
             });
           });
           context('with a negative cycle', function(){
-            it('should return false if there is no solution', function(){
+            it('should end prematurely and not find the shortest path', function(){
+              var vertexA = g.AddVertex('A'),
+                  vertexB = g.AddVertex('B'),
+                  vertexC = g.AddVertex('C');
 
+              var edgeAB = g.AddEdge('A','B', {cost: -2}),
+                  edgeAC = g.AddEdge('A','C', {cost: 3}),
+                  edgeCB = g.AddEdge('C','B', {cost: -20});
+
+              var successfulDijkstra = g.Dijkstra('A', 'B');
+              expect(successfulDijkstra).to.be.true;
+
+              expect(vertexA.color, 'Vertex A\'s color').to.equal('path');
+              expect(vertexB.color, 'Vertex B\'s color').to.equal('path');
+              expect(vertexC.color, 'Vertex C\'s color').to.equal('black');
+
+              expect(edgeAB.color, 'Edge A - B').to.equal('path');
+              expect(edgeAC.color, 'Edge A - C').to.equal(-1);
+              expect(edgeCB.color, 'Edge C - B').to.equal(-1);
             });
           });
         })
@@ -679,10 +697,27 @@ describe('#giraffe.js', function() {
             expect(edge56.color, 'Edge 5 - 6').to.equal(-1);
           });
         });
-        context.skip('with Negative Costs', function(){
+        context('with Negative Costs', function(){
           context('no negative cycles', function(){
             it('should find the shortest path between two vertices', function(){
+              var vertexA = g.AddVertex('A'),
+                  vertexB = g.AddVertex('B'),
+                  vertexC = g.AddVertex('C');
 
+              var edgeAB = g.AddEdge('A','B', {cost: 2}),
+                  edgeAC = g.AddEdge('A','C', {cost: 3}),
+                  edgeCB = g.AddEdge('C','B', {cost: -2});
+
+              var successfulDijkstra = g.Dijkstra('A', 'B');
+              expect(successfulDijkstra).to.be.true;
+
+              expect(vertexA.color, 'Vertex A\'s color').to.equal('path');
+              expect(vertexB.color, 'Vertex B\'s color').to.equal('path');
+              expect(vertexC.color, 'Vertex C\'s color').to.equal('path');
+
+              expect(edgeAB.color, 'Edge A - B').to.equal(-1);
+              expect(edgeAC.color, 'Edge A - C').to.equal('path');
+              expect(edgeCB.color, 'Edge C - B').to.equal('path');
             });
           });
           context('with a negative cycle', function(){

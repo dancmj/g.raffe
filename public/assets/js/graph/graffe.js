@@ -39,7 +39,7 @@ module.exports = function() {
     this.vertices = [];
     this.edges = [];
     this.directed = true;
-    this.adjacencyMatrix = [];
+    this.adjacencyMatrix = {};
   };
 
   Graph.prototype = {
@@ -327,7 +327,7 @@ module.exports = function() {
       }
 
       if(startVertex.color !== 'path') return false;
-      if(!self.directed) return true; //Failsafe, Dijkstra negative CANNOT work with undirected graphs
+      if(!self.directed) return goalVertex.tag.key; //Failsafe, Dijkstra negative CANNOT work with undirected graphs
       //Reset the color of the vertices in path
       _.forEach(path, function(vertex){
         vertex.color = 'black';
@@ -343,18 +343,16 @@ module.exports = function() {
         var e = heap.pop();
 
         if (e.cost + e.source.tag.key < e.sink.tag.key) { //IF the cost will be less than the sink's key
-          // if(e.sink.distanceFromRoot < e.source.distanceFromRoot){
-          //   var distanceLimit = e.source.distanceFromRoot - e.sink.distanceFromRoot,
-          //       temporalSource = e.source;
-          //   for(var i = 0; i < distanceLimit; i++){
-          //     counter += temporalSource.tag.edge.cost;
-          //     if(temporalSource.tag.parent == e.sink){
-          //       counter += e.cost;
-          //       return false;
-          //     }
-          //     temporalSource = temporalSource.tag.parent;
-          //   }
-          // }
+          if(e.sink.distanceFromRoot < e.source.distanceFromRoot){
+            var distanceLimit = e.source.distanceFromRoot - e.sink.distanceFromRoot,
+                temporalSource = e.source;
+            for(var i = 0; i < distanceLimit; i++){
+              if(temporalSource.tag.parent == e.sink){
+                return false;
+              }
+              temporalSource = temporalSource.tag.parent;
+            }
+          }
           //No negcycles found, add the edge to the graph and change all the children.
 
           e.sink.tag.edge.setColor(-1); //Revert previous edge to parent color.
@@ -388,8 +386,34 @@ module.exports = function() {
         if(p.tag.edge) p.tag.edge.setColor('path');
         p = p.tag.parent;
       }
+      return goalVertex.tag.key;
+    },
+    Matrix: function(){
+      var vertices = this.vertices,
+          self = this;
 
-      return true;
+      self.adjacencyMatrix = {};
+
+      _.forEach(vertices, function(vertex_i, i){
+        self.adjacencyMatrix[vertex_i.name] = {};
+        _.forEach(vertices, function(vertex_j, j){
+          self.adjacencyMatrix[vertex_i.name][vertex_j.name] = { cost: Infinity, parent: null };
+          var current = self.adjacencyMatrix[vertex_i.name][vertex_j.name];
+          if(i !== j){
+            _.forEach(self.edges, function(edge){
+            if(edge.source.name === vertex_i.name && edge.sink.name === vertex_j.name){
+                current.cost = edge.cost;
+                current.parent = edge.source.name;
+              }
+            });
+          }else{
+            current.cost = 0;
+          }
+        });
+      });
+      // console.log(self.adjacencyMatrix)
+
+      return self.adjacencyMatrix;
     }
     //////////////////////////////////////
   }

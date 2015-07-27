@@ -1,4 +1,4 @@
-var Graffe = require('../public/assets/js/graph/graffe.BE.js');
+var Graffe = require('../public/assets/js/graph/graffe.js');
 
 describe('#giraffe.js', function() {
   var graffe = new Graffe();
@@ -587,7 +587,7 @@ describe('#giraffe.js', function() {
                 edge56 = g.AddEdge('5', '6', { cost: 9 });
 
             var successfulDijkstra = g.Dijkstra('1', '5');
-            expect(successfulDijkstra).to.be.true;
+            expect(successfulDijkstra).to.equal(20);
 
             expect(vertex1.color, 'Vertex 1\'s color').to.be.equal('path');
             expect(vertex2.color, 'Vertex 2\'s color').to.be.equal('black');
@@ -619,7 +619,7 @@ describe('#giraffe.js', function() {
                   edgeCB = g.AddEdge('C','B', {cost: -2});
 
               var successfulDijkstra = g.Dijkstra('A', 'B');
-              expect(successfulDijkstra).to.be.true;
+              expect(successfulDijkstra).to.equal(-2);
 
               expect(vertexA.color, 'Vertex A\'s color').to.equal('path');
               expect(vertexB.color, 'Vertex B\'s color').to.equal('path');
@@ -641,7 +641,7 @@ describe('#giraffe.js', function() {
                   edgeCB = g.AddEdge('C','B', {cost: -20});
 
               var successfulDijkstra = g.Dijkstra('A', 'B');
-              expect(successfulDijkstra).to.be.true;
+              expect(successfulDijkstra).to.equal(-2);
 
               expect(vertexA.color, 'Vertex A\'s color').to.equal('path');
               expect(vertexB.color, 'Vertex B\'s color').to.equal('path');
@@ -677,7 +677,7 @@ describe('#giraffe.js', function() {
             g.directed = true;
 
             var successfulDijkstra = g.Dijkstra('1', '5');
-            expect(successfulDijkstra).to.be.true;
+            expect(successfulDijkstra).to.equal(26);
 
             expect(vertex1.color, 'Vertex 1\'s color').to.be.equal('path');
             expect(vertex2.color, 'Vertex 2\'s color').to.be.equal('black');
@@ -709,7 +709,7 @@ describe('#giraffe.js', function() {
                   edgeCB = g.AddEdge('C','B', {cost: -2});
 
               var successfulDijkstra = g.Dijkstra('A', 'B');
-              expect(successfulDijkstra).to.be.true;
+              expect(successfulDijkstra).to.equal(1);
 
               expect(vertexA.color, 'Vertex A\'s color').to.equal('path');
               expect(vertexB.color, 'Vertex B\'s color').to.equal('path');
@@ -722,10 +722,56 @@ describe('#giraffe.js', function() {
           });
           context('with a negative cycle', function(){
             it('should return false if there is no solution', function(){
+              var vertexA = g.AddVertex('A'),
+                  vertexB = g.AddVertex('B'),
+                  vertexC = g.AddVertex('C');
 
+              var edgeAB = g.AddEdge('A','B', {cost: 2}),
+                  edgeAC = g.AddEdge('B','C', {cost: 3}),
+                  edgeCB = g.AddEdge('C','A', {cost: -999});
+
+              var successfulDijkstra = g.Dijkstra('A', 'C');
+              expect(successfulDijkstra).to.be.false;
+
+              expect(vertexA.color, 'Vertex A\'s color').to.equal('black');
+              expect(vertexB.color, 'Vertex B\'s color').to.equal('black');
+              expect(vertexC.color, 'Vertex C\'s color').to.equal('black');
+
+              expect(edgeAB.color, 'Edge A - B').to.equal(-1);
+              expect(edgeAC.color, 'Edge A - C').to.equal(-1);
+              expect(edgeCB.color, 'Edge C - B').to.equal(-1);
             });
           });
         })
+      });
+    });
+    describe('#AdjacencyMatrix()', function(){
+      it('should create an adjacency matrix', function(){
+        var edgeAB = g.AddEdge('A', 'B', { cost: 7 }),
+            edgeAC = g.AddEdge('A', 'C', { cost: 2 }),
+            edgeAD = g.AddEdge('A', 'D', { cost: 4 }),
+            edgeBD = g.AddEdge('B', 'D', { cost: 3 }),
+            edgeCD = g.AddEdge('C', 'D', { cost: 5 });
+
+        var adjacencyMatrix = g.Matrix(),
+            expectedMatrix = { A: { A: { cost: 0, parent: null },
+                                  B: { cost: 7, parent: 'A' },
+                                  C: { cost: 2, parent: 'A' },
+                                  D: { cost: 4, parent: 'A' } },
+                              B: { A: { cost: Infinity, parent: null },
+                                  B: { cost: 0, parent: null },
+                                  C: { cost: Infinity, parent: null },
+                                  D: { cost: 3, parent: 'B' } },
+                              C: { A: { cost: Infinity, parent: null },
+                                  B: { cost: Infinity, parent: null },
+                                  C: { cost: 0, parent: null },
+                                  D: { cost: 5, parent: 'C' } },
+                              D: { A: { cost: Infinity, parent: null },
+                                  B: { cost: Infinity, parent: null },
+                                  C: { cost: Infinity, parent: null },
+                                  D: { cost: 0, parent: null } } };
+
+        expect(g.adjacencyMatrix).to.deep.equal(expectedMatrix);
       });
     });
   });

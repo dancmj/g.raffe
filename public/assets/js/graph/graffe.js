@@ -414,6 +414,9 @@ module.exports = function() {
       // console.log(self.adjacencyMatrix)
 
       return self.adjacencyMatrix;
+    },
+    FloydWarshall: function(){
+      
     }
     //////////////////////////////////////
   }

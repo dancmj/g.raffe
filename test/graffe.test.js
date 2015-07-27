@@ -774,5 +774,8 @@ describe('#giraffe.js', function() {
         expect(g.adjacencyMatrix).to.deep.equal(expectedMatrix);
       });
     });
+    describe('#FloydWarshall\'s()', function(){
+
+    });
   });
 });

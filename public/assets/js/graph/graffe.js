@@ -1,5 +1,4 @@
 var Graffe = (function() {
-  console.log(typeof BinaryHeap);
   function Vertex(name) {
     this.name = name;
     this.adjacents = [];

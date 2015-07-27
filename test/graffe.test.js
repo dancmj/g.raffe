@@ -1,11 +1,9 @@
-var Graffe = require('../public/assets/js/graph/graffe.js');
 
 describe('#giraffe.js', function() {
-  var graffe = new Graffe();
   var g;
 
   beforeEach(function() {
-    g = graffe.newGraph();
+    g = Graffe.newGraph();
   });
 
   context('#Vertex', function() {

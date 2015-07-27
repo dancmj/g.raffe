@@ -1,7 +1,5 @@
-var _ = require('lodash');
-var binaryHeap = require('../utils/binaryHeap.js');
-
-module.exports = function() {
+var Graffe = (function() {
+  console.log(typeof BinaryHeap);
   function Vertex(name) {
     this.name = name;
     this.adjacents = [];
@@ -217,7 +215,7 @@ module.exports = function() {
 
       startVertex.tag.key = 0;
 
-      var heap = binaryHeap.create(function(vertex){
+      var heap = BinaryHeap.create(function(vertex){
             return vertex.tag.key
           });
 
@@ -252,7 +250,7 @@ module.exports = function() {
       this.directed = false;
 
       var counter = 0, colorHelper;
-      var heap = binaryHeap.create(function(edge){
+      var heap = BinaryHeap.create(function(edge){
             return edge.cost;
           });
 
@@ -291,7 +289,7 @@ module.exports = function() {
       }
 
       var self = this,
-          heap = binaryHeap.create(function(vertex){
+          heap = BinaryHeap.create(function(vertex){
             return vertex.tag.key;
           }),
           path = [];
@@ -333,7 +331,7 @@ module.exports = function() {
         vertex.color = 'black';
       });
 
-      heap = binaryHeap.create(function(edge){ return edge.cost; }); //New heap with unused edges
+      heap = BinaryHeap.create(function(edge){ return edge.cost; }); //New heap with unused edges
       _.forEach(self.edges, function(edge){ //Iterate over non-path edges
         edge.color !== 'path' ? heap.push(edge) : edge.setColor(-1);
         // edge not in path? push it to heap : reset color for edge in path
@@ -416,7 +414,7 @@ module.exports = function() {
       return self.adjacencyMatrix;
     },
     FloydWarshall: function(){
-      
+
     }
     //////////////////////////////////////
   }
@@ -428,4 +426,4 @@ module.exports = function() {
   return {
     newGraph: newGraph
   }
-}
+})();

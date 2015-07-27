@@ -9,10 +9,10 @@ gulp.task('default', ['test'], function(){
 });
 
 gulp.task('test', function () {
-  gulp
-    .src(['./test/helpers/*.js','./test/**/*.test.js'])
-    .pipe(mocha({reporter: 'spec'}))
   // gulp
-  //   .src(['test/_testRunner.html'])
-  //   .pipe(mochaPhantomJS({reporter: 'spec'}));
+  //   .src(['./test/helpers/*.js','./test/**/*.test.js'])
+  //   .pipe(mocha({reporter: 'spec'}))
+  gulp
+    .src(['test/_testRunner.html'])
+    .pipe(mochaPhantomJS({reporter: 'spec'}));
 });

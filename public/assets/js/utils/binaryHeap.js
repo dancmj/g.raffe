@@ -1,4 +1,4 @@
-module.exports = (function() {
+var BinaryHeap = (function() {
   function _BinaryHeap(scoreFunction) {
     this.content = [];
     this.scoreFunction = scoreFunction;

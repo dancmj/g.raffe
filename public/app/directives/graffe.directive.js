@@ -1,9 +1,12 @@
 angular.module('graffeDirective', []).directive('graffe', function(){
-  function link(scope, element, attr){
-    element.text('Hello!!!!!');
+  var vm = this;
+
+  function link(scope, el, attr){
+
   }
   return {
     link: link,
-    restrict: 'E'
+    restrict: 'E',
+    data: '='
   }
 });

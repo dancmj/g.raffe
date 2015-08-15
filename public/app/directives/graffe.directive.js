@@ -7,6 +7,6 @@ angular.module('graffeDirective', []).directive('graffe', function(){
   return {
     link: link,
     restrict: 'E',
-    data: '='
+    graph: '='
   }
 });

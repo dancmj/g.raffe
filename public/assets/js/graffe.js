@@ -47,7 +47,9 @@ var graffe = (function() {
         'name': name
       }) || false;
     },
-    addVertex: function(name) {
+    addVertex: function(newVertex) {
+      var name;
+      newVertex instanceof Vertex ? name = newVertex.name : name = newVertex;
       name = typeof name === 'number' || typeof name === 'string' ? name = name + '' : name = null
       if(!name) return false;
 

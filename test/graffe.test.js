@@ -232,7 +232,7 @@ describe('#giraffe.js', function() {
         expect(edgeRemoved5, 'edge doesn\'t exist').to.be.false;
       });
     });
-    describe('#SetColor', function(){
+    describe('#setColor', function(){
       it('should change color of edge and its redge', function(){
         var edgeAB = g.addEdge('A', 'B'),
             edgeCD = g.addEdge('C', 'D');

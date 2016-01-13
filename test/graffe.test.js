@@ -273,7 +273,7 @@ describe('#giraffe.js', function() {
         expect(isBipartite).to.be.false;
       });
     });
-    describe('#BreadthFirstSearch()', function(){
+    describe('#breadthFirstSearch()', function(){
       it('should return false if start vertex is not found', function(){
         var successfulbfs = g.bfs('M');
         expect(successfulbfs, 'Breadth First Search success').to.be.false;
@@ -367,10 +367,10 @@ describe('#giraffe.js', function() {
         });
       });
     });
-    describe('#DepthFirstSearch()', function(){
+    describe('#depthFirstSearch()', function(){
       it('should return false if startNode is not found', function(){
-        var successfuldfs = g.dfs('A');
-        expect(successfuldfs, 'Depth First Search success').to.be.false;
+        var successfulDfs = g.dfs('A');
+        expect(successfulDfs, 'Depth First Search success').to.be.false;
       });
       context('Undirected Graph', function(){
         it('should create a tree if dfs is completed successfully', function(){
@@ -386,8 +386,8 @@ describe('#giraffe.js', function() {
               edgeGH = g.addEdge('G', 'H');
           g.directed = false;
 
-          var successfuldfs = g.dfs('A');
-          expect(successfuldfs, 'Depth First Search success').to.be.true;
+          var successfulDfs = g.dfs('A');
+          expect(successfulDfs, 'Depth First Search success').to.be.true;
           expect(g.findVertex('A').distanceFromRoot, 'vertex A distance').to.equal(0);
           expect(g.findVertex('B').distanceFromRoot, 'vertex B distance').to.equal(1);
           expect(g.findVertex('C').distanceFromRoot, 'vertex C distance').to.equal(3);
@@ -430,8 +430,8 @@ describe('#giraffe.js', function() {
               edgeFG = g.addEdge('F', 'G');//    1   2 - 3 - 4  DISTANCE
           g.directed = true;
 
-          var successfuldfs = g.dfs('A');
-          expect(successfuldfs, 'Depth First Search success').to.be.true;
+          var successfulDfs = g.dfs('A');
+          expect(successfulDfs, 'Depth First Search success').to.be.true;
           expect(g.findVertex('A').distanceFromRoot, 'vertex A distance').to.equal(0);
           expect(g.findVertex('B').distanceFromRoot, 'vertex B distance').to.equal(1);
           expect(g.findVertex('C').distanceFromRoot, 'vertex C distance').to.equal(0);
@@ -461,10 +461,10 @@ describe('#giraffe.js', function() {
         });
       });
     });
-    describe('#Prim\'s()', function(){
+    describe('#prim\'s()', function(){
       it('should return false if vertex is not found', function(){
-        var successfulprim = g.prim('K');
-        expect(successfulprim, 'Prim\'s success').to.be.false;
+        var successfulPrim = g.prim('K');
+        expect(successfulPrim, 'Prim\'s success').to.be.false;
       });
       it('should change the graph to be undirected', function(){
         g.addEdge('A', 'B', {cost: 2});
@@ -482,8 +482,8 @@ describe('#giraffe.js', function() {
             edgeBD = g.addEdge('B', 'D', {cost: 2}),//    \ | GRAPH  |      \   EXPECTED
             edgeCD = g.addEdge('C', 'D', {cost: 3});//  C - D        |    C - D
 
-        var successfulprim = g.prim('A');
-        expect(successfulprim, 'Prim\'s success').to.be.true;
+        var successfulPrim = g.prim('A');
+        expect(successfulPrim, 'Prim\'s success').to.be.true;
         expect(edgeAB.color, 'Edge A - B').to.equal('path');
         expect(edgeAD.color, 'Edge A - D').to.equal('path');
         expect(edgeBD.color, 'Edge B - D').to.equal(-1);
@@ -492,8 +492,8 @@ describe('#giraffe.js', function() {
     });
     describe('#kruskal\'s()', function(){
       it('should return false if no vertices or edges exist', function(){
-        var successfulkruskal = g.kruskal();
-        expect(successfulkruskal).to.be.false;
+        var successfulKruskal = g.kruskal();
+        expect(successfulKruskal).to.be.false;
       });
       it('should change the graph to be undirected', function(){
         g.addEdge('A', 'B', {cost: 2});
@@ -522,8 +522,8 @@ describe('#giraffe.js', function() {
             edgeJI = g.addEdge('J', 'I', {cost: 5}),
             edgeHJ = g.addEdge('H', 'J', {cost: 3});
 
-        var successfulkruskal = g.kruskal();
-        expect(successfulkruskal).to.be.true;
+        var successfulKruskal = g.kruskal();
+        expect(successfulKruskal).to.be.true;
         //TREE 1
         expect(edgeAE.color, 'Edge A - E').to.equal('path');  // cost: 1
         expect(edgeCD.color, 'Edge C - D').to.equal('path');  // cost: 2
@@ -545,20 +545,20 @@ describe('#giraffe.js', function() {
     describe('#dijkstra\'s()', function(){
       it('should return false if either of the nodes don\'t exist', function(){
         g.addEdge('C', 'D');
-        var successfuldijkstra1 = g.dijkstra();
-        var successfuldijkstra2 = g.dijkstra('A');
-        var successfuldijkstra3 = g.dijkstra('C', 'B');
+        var successfulDijkstra1 = g.dijkstra();
+        var successfulDijkstra2 = g.dijkstra('A');
+        var successfulDijkstra3 = g.dijkstra('C', 'B');
 
-        expect(successfuldijkstra1, 'no parameters received').to.be.false;
-        expect(successfuldijkstra2, 'end vertex undefined').to.be.false;
-        expect(successfuldijkstra3, 'C exists, B doesn\'t exist').to.be.false;
+        expect(successfulDijkstra1, 'no parameters received').to.be.false;
+        expect(successfulDijkstra2, 'end vertex undefined').to.be.false;
+        expect(successfulDijkstra3, 'C exists, B doesn\'t exist').to.be.false;
       });
       it('should return false if no path exists between the vertices', function(){
         g.addEdge('A', 'B');
         g.addVertex('C');
 
-        var successfuldijkstra = g.dijkstra('A', 'C');
-        expect(successfuldijkstra).to.be.false;
+        var successfulDijkstra = g.dijkstra('A', 'C');
+        expect(successfulDijkstra).to.be.false;
       });
       context('Undirected Graph', function(){
         beforeEach(function(){
@@ -583,8 +583,8 @@ describe('#giraffe.js', function() {
                 edge45 = g.addEdge('4', '5', { cost: 6 }),
                 edge56 = g.addEdge('5', '6', { cost: 9 });
 
-            var successfuldijkstra = g.dijkstra('1', '5');
-            expect(successfuldijkstra).to.equal(20);
+            var successfulDijkstra = g.dijkstra('1', '5');
+            expect(successfulDijkstra).to.equal(20);
 
             expect(vertex1.color, 'Vertex 1\'s color').to.be.equal('path');
             expect(vertex2.color, 'Vertex 2\'s color').to.be.equal('black');
@@ -615,8 +615,8 @@ describe('#giraffe.js', function() {
                   edgeAC = g.addEdge('A','C', {cost: 3}),
                   edgeCB = g.addEdge('C','B', {cost: -2});
 
-              var successfuldijkstra = g.dijkstra('A', 'B');
-              expect(successfuldijkstra).to.equal(-2);
+              var successfulDijkstra = g.dijkstra('A', 'B');
+              expect(successfulDijkstra).to.equal(-2);
 
               expect(vertexA.color, 'Vertex A\'s color').to.equal('path');
               expect(vertexB.color, 'Vertex B\'s color').to.equal('path');
@@ -637,8 +637,8 @@ describe('#giraffe.js', function() {
                   edgeAC = g.addEdge('A','C', {cost: 3}),
                   edgeCB = g.addEdge('C','B', {cost: -20});
 
-              var successfuldijkstra = g.dijkstra('A', 'B');
-              expect(successfuldijkstra).to.equal(-2);
+              var successfulDijkstra = g.dijkstra('A', 'B');
+              expect(successfulDijkstra).to.equal(-2);
 
               expect(vertexA.color, 'Vertex A\'s color').to.equal('path');
               expect(vertexB.color, 'Vertex B\'s color').to.equal('path');
@@ -673,8 +673,8 @@ describe('#giraffe.js', function() {
 
             g.directed = true;
 
-            var successfuldijkstra = g.dijkstra('1', '5');
-            expect(successfuldijkstra).to.equal(26);
+            var successfulDijkstra = g.dijkstra('1', '5');
+            expect(successfulDijkstra).to.equal(26);
 
             expect(vertex1.color, 'Vertex 1\'s color').to.be.equal('path');
             expect(vertex2.color, 'Vertex 2\'s color').to.be.equal('black');
@@ -705,8 +705,8 @@ describe('#giraffe.js', function() {
                   edgeAC = g.addEdge('A','C', {cost: 3}),
                   edgeCB = g.addEdge('C','B', {cost: -2});
 
-              var successfuldijkstra = g.dijkstra('A', 'B');
-              expect(successfuldijkstra).to.equal(1);
+              var successfulDijkstra = g.dijkstra('A', 'B');
+              expect(successfulDijkstra).to.equal(1);
 
               expect(vertexA.color, 'Vertex A\'s color').to.equal('path');
               expect(vertexB.color, 'Vertex B\'s color').to.equal('path');
@@ -727,8 +727,8 @@ describe('#giraffe.js', function() {
                   edgeAC = g.addEdge('B','C', {cost: 3}),
                   edgeCB = g.addEdge('C','A', {cost: -999});
 
-              var successfuldijkstra = g.dijkstra('A', 'C');
-              expect(successfuldijkstra).to.be.false;
+              var successfulDijkstra = g.dijkstra('A', 'C');
+              expect(successfulDijkstra).to.be.false;
 
               expect(vertexA.color, 'Vertex A\'s color').to.equal('black');
               expect(vertexB.color, 'Vertex B\'s color').to.equal('black');
@@ -742,7 +742,7 @@ describe('#giraffe.js', function() {
         })
       });
     });
-    describe('#AdjacencyMatrix()', function(){
+    describe('#adjacencyMatrix()', function(){
       it('should create an adjacency matrix', function(){
         var edgeAB = g.addEdge('A', 'B', { cost: 7 }),
             edgeAC = g.addEdge('A', 'C', { cost: 2 }),

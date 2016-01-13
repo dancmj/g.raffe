@@ -3,7 +3,7 @@ angular.module('app.routes', ['ngRoute']).config(['$routeProvider', '$locationPr
     templateUrl: 'app/views/pages/home.html',
     controller: 'homeController',
     controllerAs: 'home'
-  });
+  }).otherwise('/');
 
   $locationProvider.html5Mode(true);
 }]);

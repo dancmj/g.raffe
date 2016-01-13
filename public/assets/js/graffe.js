@@ -27,7 +27,7 @@ var graffe = (function() {
     this.redge = null;
     this.fake = false;
     this.color = -1;
-    this.setColor = function(newColor){
+    this.setColor = function(newColor) {
       this.color = this.redge.color = newColor;
     }
   };
@@ -42,16 +42,18 @@ var graffe = (function() {
   Graph.prototype = {
     findVertex: function(name) {
       name = typeof name === 'number' || typeof name === 'string' ? name = name + '' : name = null
-      if(!name) return false;
+      if (!name) return false;
       return _.find(this.vertices, {
         'name': name
       }) || false;
     },
+
     addVertex: function(newVertex) {
       var name;
       newVertex instanceof Vertex ? name = newVertex.name : name = newVertex;
-      name = typeof name === 'number' || typeof name === 'string' ? name = name + '' : name = null
-      if(!name) return false;
+      name = typeof name === 'number' || typeof name === 'string' ? name = name + '' : name = null;
+
+      if (!name) return false;
 
       name = _.trunc(_.trim(name), {
         length: 10,
@@ -64,13 +66,15 @@ var graffe = (function() {
       this.vertices.push(new Vertex(name));
       return _.last(this.vertices);
     },
+
     removeVertex: function(name) {
-      var eraseeVertex = this.findVertex(name),
-        self = this;
+      var _this = this;
+      var eraseeVertex = this.findVertex(name);
+
       if (!eraseeVertex) return false;
 
       _.forEachRight(eraseeVertex.adjacents, function(edge) {
-        !edge.fake ? self.removeEdge(eraseeVertex.name, edge.sink.name) : self.removeEdge(edge.sink.name, eraseeVertex.name);
+        !edge.fake ? _this.removeEdge(eraseeVertex.name, edge.sink.name) : _this.removeEdge(edge.sink.name, eraseeVertex.name);
       });
 
       this.vertices.splice(_.findIndex(this.vertices, function(vertex) {
@@ -79,15 +83,15 @@ var graffe = (function() {
 
       return true;
     },
+
     findEdge: function(source, sink) {
       return _.find(this.edges, function(edge) {
         return edge.sink.name == sink && edge.source.name == source;
       }) || false;
     },
+
     addEdge: function(source, sink, properties) {
-      if (!source || !sink || source == sink) {
-        return false;
-      }
+      if (!source || !sink || source == sink) return false;
 
       if (!properties) {
         properties = {
@@ -102,6 +106,7 @@ var graffe = (function() {
       sink = this.addVertex(sink);
 
       var repeatedEdge = this.findEdge(source.name, sink.name);
+
       if (repeatedEdge) return repeatedEdge;
 
       var edge = new Edge(source, sink, properties);
@@ -111,6 +116,7 @@ var graffe = (function() {
         maxFlow: 0,
         minFlow: properties.minFlow
       });
+
       redge.fake = true;
       edge.redge = redge;
       redge.redge = edge;
@@ -120,6 +126,7 @@ var graffe = (function() {
 
       return _.last(this.edges);
     },
+
     removeEdge: function(source, sink) {
       source = this.findVertex(source);
       sink = this.findVertex(sink);
@@ -144,45 +151,48 @@ var graffe = (function() {
 
       return true;
     },
+
     //////////////////////////////////////
     isBipartite: function() {
       if (!this.vertices.length || !this.edges.length) return true;
 
+      var queue = [];
+      var result = true;
       var startVertex = this.vertices[0];
       startVertex.color = 1;
-
-      var queue = [],
-        result = true;
 
       queue.push(startVertex);
       while (queue.length > 0 && result) {
         var v = queue.shift();
-        _.forEach(v.adjacents, function(edge){
-            if(edge.sink.color == -1){
-                edge.sink.color = 1 - v.color;
-                queue.push(edge.sink);
-            }else if(edge.sink.color == v.color){
-                result = false;
-            }
+        _.forEach(v.adjacents, function(edge) {
+          if (edge.sink.color == -1) {
+            edge.sink.color = 1 - v.color;
+            queue.push(edge.sink);
+          } else if (edge.sink.color == v.color) {
+            result = false;
+          }
         });
       }
 
       return result;
     },
-    bfs: function(startVertex){
+
+    bfs: function(startVertex) {
       startVertex = this.findVertex(startVertex);
-      if(!startVertex) return false;
+      if (!startVertex) return false;
 
       startVertex.color = 'gray';
 
-      var queue = [], self = this;
+      var queue = [];
+      var _this = this;
+
       queue.push(startVertex);
 
-      while(queue.length > 0){
+      while (queue.length > 0) {
         var v = queue.shift();
 
-        _.forEach(v.adjacents, function(edge){
-          if(edge.sink.color == -1 && !(edge.fake && self.directed)){
+        _.forEach(v.adjacents, function(edge) {
+          if (edge.sink.color == -1 && !(edge.fake && _this.directed)) {
             edge.setColor('path');
             edge.sink.distanceFromRoot = v.distanceFromRoot + 1;
             edge.sink.color = 'gray';
@@ -194,117 +204,122 @@ var graffe = (function() {
 
       return true;
     },
-    dfs: function(currentVertex){
-      currentVertex = this.findVertex(currentVertex), self = this;
-      if(!currentVertex) return false;
+
+    dfs: function(currentVertex) {
+      currentVertex = this.findVertex(currentVertex), _this = this;
+      if (!currentVertex) return false;
 
       currentVertex.color = 'black';
-      _.forEach(currentVertex.adjacents, function(edge){
-        if(edge.sink.color == -1 && !(edge.fake && self.directed)){
+      _.forEach(currentVertex.adjacents, function(edge) {
+        if (edge.sink.color == -1 && !(edge.fake && _this.directed)) {
           edge.setColor('path');
           edge.sink.distanceFromRoot = currentVertex.distanceFromRoot + 1;
-          self.dfs(edge.sink.name);
+          _this.dfs(edge.sink.name);
         }
       });
 
       return true;
     },
-    prim: function(startVertex){
+
+    prim: function(startVertex) {
       startVertex = this.findVertex(startVertex);
-      if(!startVertex) return false;
+      if (!startVertex) return false;
       this.directed = false;
 
       startVertex.tag.key = 0;
 
-      var heap = BinaryHeap.create(function(vertex){
-            return vertex.tag.key
-          });
+      var heap = BinaryHeap.create(function(vertex) {
+        return vertex.tag.key
+      });
 
       heap.push(startVertex);
 
-      while(heap.content.length > 0){
+      while (heap.content.length > 0) {
         v = heap.pop();
         v.color = 'black';
 
-        _.forEach(v.adjacents, function(edge){
-          if(edge.sink.color == -1){
-            if(edge.fake) edge.cost = edge.redge.cost;
-            if(edge.sink.color != 'black' && edge.cost < edge.sink.tag.key){
-              edge.sink.tag = {key: edge.cost, parent: v, edge: edge};
+        _.forEach(v.adjacents, function(edge) {
+          if (edge.sink.color == -1) {
+            if (edge.fake) edge.cost = edge.redge.cost;
+            if (edge.sink.color != 'black' && edge.cost < edge.sink.tag.key) {
+              edge.sink.tag = {
+                key: edge.cost,
+                parent: v,
+                edge: edge
+              };
               heap.push(edge.sink);
             }
           }
         });
       }
 
-      _.forEach(this.vertices, function(vertex){
-        if(vertex.tag.edge != null){
-          vertex.tag.edge.setColor('path');
-        }
+      _.forEach(this.vertices, function(vertex) {
+        if (vertex.tag.edge != null) vertex.tag.edge.setColor('path');
       });
 
       return true;
     },
-    kruskal: function(){
-      if(!this.vertices.length || !this.edges.length) return false;
+
+    kruskal: function() {
+      if (!this.vertices.length || !this.edges.length) return false;
 
       this.directed = false;
 
-      var counter = 0, colorHelper;
-      var heap = BinaryHeap.create(function(edge){
-            return edge.cost;
+      var counter = 0;
+      var colorHelper;
+      var heap = BinaryHeap.create(function(edge) {
+        return edge.cost;
+      });
+
+      _.forEach(this.edges, function(edge) {
+        heap.push(edge);
+      });
+
+      _.forEach(this.vertices, function(vertex, i) {
+        vertex.color = i;
+      });
+
+      while (heap.content.length > 0 && counter < this.vertices.length - 1) {
+        var e = heap.pop();
+
+        if (e.source.color != e.sink.color) {
+          colorHelper = e.sink.color;
+          e.color = 'path';
+
+          _.forEach(this.vertices, function(vertex) {
+            if (vertex.color == colorHelper) vertex.color = e.source.color;
           });
-
-     _.forEach(this.edges, function(edge){
-       heap.push(edge);
-     });
-
-     _.forEach(this.vertices, function(vertex, i){
-       vertex.color = i;
-     });
-
-     while(heap.content.length > 0 && counter < this.vertices.length - 1){
-       var e = heap.pop();
-
-       if(e.source.color != e.sink.color){
-         colorHelper = e.sink.color;
-         e.color = 'path';
-
-         _.forEach(this.vertices, function(vertex){
-           if(vertex.color == colorHelper){
-             vertex.color = e.source.color;
-           }
-         });
-         counter++;
-       }
-     }
+          counter++;
+        }
+      }
 
       return true;
     },
-    dijkstra: function(startVertex, goalVertex){
+
+    dijkstra: function(startVertex, goalVertex) {
       startVertex = this.findVertex(startVertex);
       goalVertex = this.findVertex(goalVertex);
 
-      if(!startVertex || !goalVertex){
+      if (!startVertex || !goalVertex) {
         return false;
       }
 
-      var self = this,
-          heap = BinaryHeap.create(function(vertex){
-            return vertex.tag.key;
-          }),
-          path = [];
+      var _this = this,
+        heap = BinaryHeap.create(function(vertex) {
+          return vertex.tag.key;
+        }),
+        path = [];
 
       startVertex.tag.key = 0;
       heap.push(startVertex);
 
-      while(heap.content.length > 0){
+      while (heap.content.length > 0) {
         var v = heap.pop();
         v.color = 'black';
 
-        _.forEach(v.adjacents, function(edge){
-          if(edge.fake) edge.cost = edge.redge.cost;
-          if(edge.sink.color != 'black' && edge.cost < edge.sink.tag.key && !(edge.fake && self.directed)){
+        _.forEach(v.adjacents, function(edge) {
+          if (edge.fake) edge.cost = edge.redge.cost;
+          if (edge.sink.color != 'black' && edge.cost < edge.sink.tag.key && !(edge.fake && _this.directed)) {
             var sinkTag = edge.sink.tag;
             sinkTag.key = edge.cost + v.tag.key;
             sinkTag.parent = v;
@@ -318,22 +333,24 @@ var graffe = (function() {
       }
 
       var p = goalVertex;
-      while(p){
+      while (p) {
         p.color = 'path';
         path.unshift(p);
-        if(p.tag.edge) p.tag.edge.setColor('path');
+        if (p.tag.edge) p.tag.edge.setColor('path');
         p = p.tag.parent;
       }
 
-      if(startVertex.color !== 'path') return false;
-      if(!self.directed) return goalVertex.tag.key; //Failsafe, dijkstra negative CANNOT work with undirected graphs
+      if (startVertex.color !== 'path') return false;
+      if (!_this.directed) return goalVertex.tag.key; //Failsafe, dijkstra negative CANNOT work with undirected graphs
       //Reset the color of the vertices in path
-      _.forEach(path, function(vertex){
+      _.forEach(path, function(vertex) {
         vertex.color = 'black';
       });
 
-      heap = BinaryHeap.create(function(edge){ return edge.cost; }); //New heap with unused edges
-      _.forEach(self.edges, function(edge){ //Iterate over non-path edges
+      heap = BinaryHeap.create(function(edge) {
+        return edge.cost;
+      }); //New heap with unused edges
+      _.forEach(_this.edges, function(edge) { //Iterate over non-path edges
         edge.color !== 'path' ? heap.push(edge) : edge.setColor(-1);
         // edge not in path? push it to heap : reset color for edge in path
       });
@@ -342,13 +359,11 @@ var graffe = (function() {
         var e = heap.pop();
 
         if (e.cost + e.source.tag.key < e.sink.tag.key) { //IF the cost will be less than the sink's key
-          if(e.sink.distanceFromRoot < e.source.distanceFromRoot){
+          if (e.sink.distanceFromRoot < e.source.distanceFromRoot) {
             var distanceLimit = e.source.distanceFromRoot - e.sink.distanceFromRoot,
-                temporalSource = e.source;
-            for(var i = 0; i < distanceLimit; i++){
-              if(temporalSource.tag.parent == e.sink){
-                return false;
-              }
+              temporalSource = e.source;
+            for (var i = 0; i < distanceLimit; i++) {
+              if (temporalSource.tag.parent == e.sink) return false;
               temporalSource = temporalSource.tag.parent;
             }
           }
@@ -366,7 +381,7 @@ var graffe = (function() {
             var v = stack.pop();
 
             _.forEach(v.adjacents, function(edge) {
-              if (edge.sink.tag.parent === v  && !(e.fake && self.directed)) {
+              if (edge.sink.tag.parent === v && !(e.fake && _this.directed)) {
                 stack.push(edge.sink);
                 edge.sink.distanceFromRoot = edge.source.distanceFromRoot + 1;
                 edge.sink.tag.key = edge.cost + edge.source.tag.key;
@@ -379,48 +394,53 @@ var graffe = (function() {
       }
 
       p = goalVertex;
-      while(p){
+      while (p) {
         p.color = 'path';
         path.unshift(p);
-        if(p.tag.edge) p.tag.edge.setColor('path');
+        if (p.tag.edge) p.tag.edge.setColor('path');
         p = p.tag.parent;
       }
       return goalVertex.tag.key;
     },
-    matrix: function(){
+
+    matrix: function() {
       var vertices = this.vertices,
-          self = this;
+        _this = this;
 
-      self.adjacencyMatrix = {};
+      _this.adjacencyMatrix = {};
 
-      _.forEach(vertices, function(vertex_i, i){
-        self.adjacencyMatrix[vertex_i.name] = {};
-        _.forEach(vertices, function(vertex_j, j){
-          self.adjacencyMatrix[vertex_i.name][vertex_j.name] = { cost: Infinity, parent: null };
-          var current = self.adjacencyMatrix[vertex_i.name][vertex_j.name];
-          if(i !== j){
-            _.forEach(self.edges, function(edge){
-            if(edge.source.name === vertex_i.name && edge.sink.name === vertex_j.name){
+      _.forEach(vertices, function(vertex_i, i) {
+        _this.adjacencyMatrix[vertex_i.name] = {};
+        _.forEach(vertices, function(vertex_j, j) {
+          _this.adjacencyMatrix[vertex_i.name][vertex_j.name] = {
+            cost: Infinity,
+            parent: null
+          };
+          var current = _this.adjacencyMatrix[vertex_i.name][vertex_j.name];
+          if (i !== j) {
+            _.forEach(_this.edges, function(edge) {
+              if (edge.source.name === vertex_i.name && edge.sink.name === vertex_j.name) {
                 current.cost = edge.cost;
                 current.parent = edge.source.name;
               }
             });
-          }else{
+          } else {
             current.cost = 0;
           }
         });
       });
-      // console.log(self.adjacencyMatrix)
+      // console.log(_this.adjacencyMatrix)
 
-      return self.adjacencyMatrix;
+      return _this.adjacencyMatrix;
     },
-    floydWarshall: function(){
+
+    floydWarshall: function() {
 
     }
     //////////////////////////////////////
   }
 
-  function newGraph(){
+  function newGraph() {
     return new Graph();
   }
 

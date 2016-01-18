@@ -1,9 +1,20 @@
-angular.module('app.routes', ['ngRoute']).config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider){
-  $routeProvider.when('/', {
-    templateUrl: 'app/views/pages/home.html',
-    controller: 'homeController',
-    controllerAs: 'home'
-  }).otherwise('/');
+(function() {
+  'use strict';
 
-  $locationProvider.html5Mode(true);
-}]);
+  angular
+    .module('appRoutes', ['ngRoute'])
+    .config(config);
+
+  config.$inject = ['$routeProvider', '$locationProvider'];
+
+  function config($routeProvider, $locationProvider) {
+    $routeProvider
+      .when('/', {
+        templateUrl: 'app/views/pages/home.html',
+        controller: 'HomeController',
+        controllerAs: 'home'
+      }).otherwise('/');
+
+    $locationProvider.html5Mode(true);
+  }
+})();

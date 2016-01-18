@@ -1,12 +1,22 @@
-angular.module('graffeDirective', []).directive('graffe', function(){
-  var vm = this;
+(function(){
+  'use strict';
 
-  function link(scope, el, attr){
+  angular
+    .module('graffeDirective', [])
+    .controller('GraffeDirective', GraffeDirective);
 
+  GraffeDirective.$inject = [];
+
+  function GraffeDirective() {
+    var vm = this;
+
+    function link(scope, el, attr){
+
+    }
+    return {
+      link: link,
+      restrict: 'E',
+      graph: '='
+    }
   }
-  return {
-    link: link,
-    restrict: 'E',
-    graph: '='
-  }
-});
+})();

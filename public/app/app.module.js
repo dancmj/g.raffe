@@ -1,9 +1,13 @@
-angular
-  .module('graffeApp',[
-    'app.routes',
-    'ngAnimate',
-    'ui.bootstrap',
-    'mainCtrl',
-    'homeCtrl',
-    'graffeDirective'
-  ]);
+(function() {
+  'use strict';
+
+  angular
+    .module('graffeApp', [
+      'appRoutes',
+      'ngAnimate',
+      'ui.bootstrap',
+      'mainCtrl',
+      'homeCtrl',
+      'graffeDirective'
+    ]);
+})();

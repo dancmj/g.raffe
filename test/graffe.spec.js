@@ -1,4 +1,4 @@
-describe('#giraffe.js', function() {
+describe('#graffe.js', function() {
   var g;
 
   beforeEach(function() {
@@ -198,8 +198,8 @@ describe('#giraffe.js', function() {
         edge = g.addEdge('A', 'B');
       });
       it('should remove edge from graph', function(){
-        var edgeRemoved1 = g.removeEdge('A', 'B')
-        var edgeRemoved2 = g.removeEdge('A', 'B')
+        var edgeRemoved1 = g.removeEdge('A', 'B');
+        var edgeRemoved2 = g.removeEdge('A', 'B');
         var edgeFound = g.findEdge('A','B');
         var vertexA = g.findVertex('A');
         var vertexB = g.findVertex('B');
@@ -571,7 +571,7 @@ describe('#giraffe.js', function() {
                 vertex3 = g.addVertex('3'),
                 vertex4 = g.addVertex('4'),
                 vertex5 = g.addVertex('5'),
-                vertex5 = g.addVertex('6');
+                vertex6 = g.addVertex('6');
 
             var edge12 = g.addEdge('1', '2', { cost: 7 }),
                 edge13 = g.addEdge('1', '3', { cost: 9 }),
@@ -591,7 +591,7 @@ describe('#giraffe.js', function() {
             expect(vertex3.color, 'Vertex 3\'s color').to.be.equal('path');
             expect(vertex4.color, 'Vertex 4\'s color').to.be.equal('black');
             expect(vertex5.color, 'Vertex 5\'s color').to.be.equal('path');
-            expect(vertex5.color, 'Vertex 6\'s color').to.be.equal('path');
+            expect(vertex6.color, 'Vertex 6\'s color').to.be.equal('path');
 
             expect(edge12.color, 'Edge 1 - 2').to.equal(-1);
             expect(edge13.color, 'Edge 1 - 3').to.equal('path');

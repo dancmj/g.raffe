@@ -11,13 +11,13 @@ var graffe = (function() {
       parent: null,
       edge: null
     };
-  };
+  }
 
   function Edge(source, sink, properties) {
     properties = properties || {};
     _.forEach(properties, function(val, key) {
       if (typeof val !== 'number') properties[key] = 0;
-    })
+    });
     this.source = source;
     this.sink = sink;
     this.cost = properties.cost || 0;
@@ -30,18 +30,18 @@ var graffe = (function() {
     this.setColor = function(newColor) {
       this.color = this.redge.color = newColor;
     }
-  };
+  }
 
   function Graph() {
     this.vertices = [];
     this.edges = [];
     this.directed = true;
     this.adjacencyMatrix = {};
-  };
+  }
 
   Graph.prototype = {
     findVertex: function(name) {
-      name = typeof name === 'number' || typeof name === 'string' ? name = name + '' : name = null
+      name = typeof name === 'number' || typeof name === 'string' ? name = name + '' : name = null;
       if (!name) return false;
       return _.find(this.vertices, {
         'name': name
@@ -200,14 +200,17 @@ var graffe = (function() {
           }
         });
         v.color = 'black';
-      };
+      }
 
       return true;
     },
 
     dfs: function(currentVertex) {
-      currentVertex = this.findVertex(currentVertex), _this = this;
+      currentVertex = this.findVertex(currentVertex)
+
       if (!currentVertex) return false;
+
+      var _this = this;
 
       currentVertex.color = 'black';
       _.forEach(currentVertex.adjacents, function(edge) {
@@ -235,7 +238,7 @@ var graffe = (function() {
       heap.push(startVertex);
 
       while (heap.content.length > 0) {
-        v = heap.pop();
+        var v = heap.pop();
         v.color = 'black';
 
         _.forEach(v.adjacents, function(edge) {
@@ -429,7 +432,6 @@ var graffe = (function() {
           }
         });
       });
-      // console.log(_this.adjacencyMatrix)
 
       return _this.adjacencyMatrix;
     },
@@ -438,7 +440,7 @@ var graffe = (function() {
 
     }
     //////////////////////////////////////
-  }
+  };
 
   function newGraph() {
     return new Graph();

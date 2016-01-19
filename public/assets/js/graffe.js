@@ -13,13 +13,13 @@ var graffe = (function() {
     };
   }
 
-  function Edge(source, sink, properties) {
+  function Edge(source, target, properties) {
     properties = properties || {};
     _.forEach(properties, function(val, key) {
       if (typeof val !== 'number') properties[key] = 0;
     });
     this.source = source;
-    this.sink = sink;
+    this.target = target;
     this.cost = properties.cost || 0;
     this.minFlow = !properties.minFlow || properties.minFlow < 0 ? 0 : properties.minFlow;
     this.maxFlow = !properties.maxFlow ? Infinity : properties.maxFlow < this.minFlow ? this.minFlow : properties.maxFlow;
@@ -74,7 +74,7 @@ var graffe = (function() {
       if (!eraseeVertex) return false;
 
       _.forEachRight(eraseeVertex.adjacents, function(edge) {
-        !edge.fake ? _this.removeEdge(eraseeVertex.name, edge.sink.name) : _this.removeEdge(edge.sink.name, eraseeVertex.name);
+        !edge.fake ? _this.removeEdge(eraseeVertex.name, edge.target.name) : _this.removeEdge(edge.target.name, eraseeVertex.name);
       });
 
       this.vertices.splice(_.findIndex(this.vertices, function(vertex) {
@@ -84,14 +84,14 @@ var graffe = (function() {
       return true;
     },
 
-    findEdge: function(source, sink) {
+    findEdge: function(source, target) {
       return _.find(this.edges, function(edge) {
-        return edge.sink.name == sink && edge.source.name == source;
+        return edge.target.name == target && edge.source.name == source;
       }) || false;
     },
 
-    addEdge: function(source, sink, properties) {
-      if (!source || !sink || source == sink) return false;
+    addEdge: function(source, target, properties) {
+      if (!source || !target || source == target) return false;
 
       if (!properties) {
         properties = {
@@ -103,14 +103,14 @@ var graffe = (function() {
       }
 
       source = this.addVertex(source);
-      sink = this.addVertex(sink);
+      target = this.addVertex(target);
 
-      var repeatedEdge = this.findEdge(source.name, sink.name);
+      var repeatedEdge = this.findEdge(source.name, target.name);
 
       if (repeatedEdge) return repeatedEdge;
 
-      var edge = new Edge(source, sink, properties);
-      var redge = new Edge(sink, source, {
+      var edge = new Edge(source, target, properties);
+      var redge = new Edge(target, source, {
         cost: Infinity,
         flow: 0,
         maxFlow: 0,
@@ -121,32 +121,32 @@ var graffe = (function() {
       edge.redge = redge;
       redge.redge = edge;
       source.adjacents.push(edge);
-      sink.adjacents.push(redge);
+      target.adjacents.push(redge);
       this.edges.push(edge);
 
       return _.last(this.edges);
     },
 
-    removeEdge: function(source, sink) {
+    removeEdge: function(source, target) {
       source = this.findVertex(source);
-      sink = this.findVertex(sink);
+      target = this.findVertex(target);
 
-      if (!this.edges.length || !source || !sink || sink.name == source.name || !this.findEdge(source.name, sink.name)) {
+      if (!this.edges.length || !source || !target || target.name == source.name || !this.findEdge(source.name, target.name)) {
         return false;
       }
 
       source.adjacents.splice(_.findIndex(source.adjacents, function(edge) {
-        if (!edge.fake && edge.sink.name == sink.name) edge.redge = null;
+        if (!edge.fake && edge.target.name == target.name) edge.redge = null;
         return !!edge.redge;
       }), 1);
 
-      sink.adjacents.splice(_.findIndex(sink.adjacents, function(edge) {
-        if (edge.fake && edge.source.name == sink.name) edge.redge = null;
+      target.adjacents.splice(_.findIndex(target.adjacents, function(edge) {
+        if (edge.fake && edge.source.name == target.name) edge.redge = null;
         return !!edge.redge;
       }), 1);
 
       this.edges.splice(_.findIndex(this.edges, function(edge) {
-        return edge.source.name == source.name && edge.sink.name == sink.name;
+        return edge.source.name == source.name && edge.target.name == target.name;
       }), 1);
 
       return true;
@@ -165,10 +165,10 @@ var graffe = (function() {
       while (queue.length > 0 && result) {
         var v = queue.shift();
         _.forEach(v.adjacents, function(edge) {
-          if (edge.sink.color == -1) {
-            edge.sink.color = 1 - v.color;
-            queue.push(edge.sink);
-          } else if (edge.sink.color == v.color) {
+          if (edge.target.color == -1) {
+            edge.target.color = 1 - v.color;
+            queue.push(edge.target);
+          } else if (edge.target.color == v.color) {
             result = false;
           }
         });
@@ -192,11 +192,11 @@ var graffe = (function() {
         var v = queue.shift();
 
         _.forEach(v.adjacents, function(edge) {
-          if (edge.sink.color == -1 && !(edge.fake && _this.directed)) {
+          if (edge.target.color == -1 && !(edge.fake && _this.directed)) {
             edge.setColor('path');
-            edge.sink.distanceFromRoot = v.distanceFromRoot + 1;
-            edge.sink.color = 'gray';
-            queue.push(edge.sink);
+            edge.target.distanceFromRoot = v.distanceFromRoot + 1;
+            edge.target.color = 'gray';
+            queue.push(edge.target);
           }
         });
         v.color = 'black';
@@ -214,10 +214,10 @@ var graffe = (function() {
 
       currentVertex.color = 'black';
       _.forEach(currentVertex.adjacents, function(edge) {
-        if (edge.sink.color == -1 && !(edge.fake && _this.directed)) {
+        if (edge.target.color == -1 && !(edge.fake && _this.directed)) {
           edge.setColor('path');
-          edge.sink.distanceFromRoot = currentVertex.distanceFromRoot + 1;
-          _this.dfs(edge.sink.name);
+          edge.target.distanceFromRoot = currentVertex.distanceFromRoot + 1;
+          _this.dfs(edge.target.name);
         }
       });
 
@@ -242,15 +242,15 @@ var graffe = (function() {
         v.color = 'black';
 
         _.forEach(v.adjacents, function(edge) {
-          if (edge.sink.color == -1) {
+          if (edge.target.color == -1) {
             if (edge.fake) edge.cost = edge.redge.cost;
-            if (edge.sink.color != 'black' && edge.cost < edge.sink.tag.key) {
-              edge.sink.tag = {
+            if (edge.target.color != 'black' && edge.cost < edge.target.tag.key) {
+              edge.target.tag = {
                 key: edge.cost,
                 parent: v,
                 edge: edge
               };
-              heap.push(edge.sink);
+              heap.push(edge.target);
             }
           }
         });
@@ -285,8 +285,8 @@ var graffe = (function() {
       while (heap.content.length > 0 && counter < this.vertices.length - 1) {
         var e = heap.pop();
 
-        if (e.source.color != e.sink.color) {
-          colorHelper = e.sink.color;
+        if (e.source.color != e.target.color) {
+          colorHelper = e.target.color;
           e.color = 'path';
 
           _.forEach(this.vertices, function(vertex) {
@@ -322,15 +322,15 @@ var graffe = (function() {
 
         _.forEach(v.adjacents, function(edge) {
           if (edge.fake) edge.cost = edge.redge.cost;
-          if (edge.sink.color != 'black' && edge.cost < edge.sink.tag.key && !(edge.fake && _this.directed)) {
-            var sinkTag = edge.sink.tag;
-            sinkTag.key = edge.cost + v.tag.key;
-            sinkTag.parent = v;
-            sinkTag.edge = edge;
+          if (edge.target.color != 'black' && edge.cost < edge.target.tag.key && !(edge.fake && _this.directed)) {
+            var targetTag = edge.target.tag;
+            targetTag.key = edge.cost + v.tag.key;
+            targetTag.parent = v;
+            targetTag.edge = edge;
 
-            edge.sink.distanceFromRoot = v.distanceFromRoot + 1;
+            edge.target.distanceFromRoot = v.distanceFromRoot + 1;
 
-            heap.push(edge.sink);
+            heap.push(edge.target);
           }
         });
       }
@@ -361,35 +361,35 @@ var graffe = (function() {
       while (heap.content.length > 0) {
         var e = heap.pop();
 
-        if (e.cost + e.source.tag.key < e.sink.tag.key) { //IF the cost will be less than the sink's key
-          if (e.sink.distanceFromRoot < e.source.distanceFromRoot) {
-            var distanceLimit = e.source.distanceFromRoot - e.sink.distanceFromRoot,
+        if (e.cost + e.source.tag.key < e.target.tag.key) { //IF the cost will be less than the target's key
+          if (e.target.distanceFromRoot < e.source.distanceFromRoot) {
+            var distanceLimit = e.source.distanceFromRoot - e.target.distanceFromRoot,
               temporalSource = e.source;
             for (var i = 0; i < distanceLimit; i++) {
-              if (temporalSource.tag.parent == e.sink) return false;
+              if (temporalSource.tag.parent == e.target) return false;
               temporalSource = temporalSource.tag.parent;
             }
           }
           //No negcycles found, add the edge to the graph and change all the children.
 
-          e.sink.tag.edge.setColor(-1); //Revert previous edge to parent color.
-          e.sink.tag.key = e.cost + e.source.tag.key;
-          e.sink.tag.parent = e.source;
-          e.sink.tag.edge = e;
+          e.target.tag.edge.setColor(-1); //Revert previous edge to parent color.
+          e.target.tag.key = e.cost + e.source.tag.key;
+          e.target.tag.parent = e.source;
+          e.target.tag.edge = e;
 
           var stack = [];
-          stack.push(e.sink);
+          stack.push(e.target);
 
           while (stack.length > 0) { //Check children's tags
             var v = stack.pop();
 
             _.forEach(v.adjacents, function(edge) {
-              if (edge.sink.tag.parent === v && !(e.fake && _this.directed)) {
-                stack.push(edge.sink);
-                edge.sink.distanceFromRoot = edge.source.distanceFromRoot + 1;
-                edge.sink.tag.key = edge.cost + edge.source.tag.key;
-                edge.sink.tag.parent = edge.source;
-                edge.sink.tag.edge = edge;
+              if (edge.target.tag.parent === v && !(e.fake && _this.directed)) {
+                stack.push(edge.target);
+                edge.target.distanceFromRoot = edge.source.distanceFromRoot + 1;
+                edge.target.tag.key = edge.cost + edge.source.tag.key;
+                edge.target.tag.parent = edge.source;
+                edge.target.tag.edge = edge;
               }
             });
           }
@@ -422,7 +422,7 @@ var graffe = (function() {
           var current = _this.adjacencyMatrix[vertex_i.name][vertex_j.name];
           if (i !== j) {
             _.forEach(_this.edges, function(edge) {
-              if (edge.source.name === vertex_i.name && edge.sink.name === vertex_j.name) {
+              if (edge.source.name === vertex_i.name && edge.target.name === vertex_j.name) {
                 current.cost = edge.cost;
                 current.parent = edge.source.name;
               }

@@ -125,13 +125,13 @@ describe('#graffe.js', function() {
         g.addEdge('A', 'C');
 
         expect(edge.source).to.equal(g.findVertex('A'));
-        expect(edge.sink).to.equal(g.findVertex('B'));
+        expect(edge.target).to.equal(g.findVertex('B'));
         expect(edge.cost, 'cost').to.equal(0);
         expect(edge.maxFlow, 'max flow').to.equal(Infinity);
         expect(edge.minFlow, 'min flow').to.equal(0);
         expect(edge.flow, 'flow').to.equal(0);
         expect(edge.redge.source).to.equal(g.findVertex('B'));
-        expect(edge.redge.sink).to.equal(g.findVertex('A'));
+        expect(edge.redge.target).to.equal(g.findVertex('A'));
         expect(edge.fake).to.be.false;
         expect(edge.color).to.equal(-1);
         expect(vertexA.adjacents, 'A ->').to.have.lengthOf(2);
@@ -211,7 +211,7 @@ describe('#graffe.js', function() {
         expect(edgeFound, 'edge exists').to.be.false;
         expect(edge.redge, 'return edge').to.be.null;
         expect(vertexA.adjacents, 'source vertex adjacents').to.have.lengthOf(0);
-        expect(vertexB.adjacents, 'sink vertex adjacents').to.have.lengthOf(0);
+        expect(vertexB.adjacents, 'target vertex adjacents').to.have.lengthOf(0);
         expect(g.edges, 'edge list').to.have.lengthOf(1);
       });
       it('should return false with invalid parameters', function(){
@@ -228,7 +228,7 @@ describe('#graffe.js', function() {
         expect(edgeRemoved1, 'no parameters').to.be.false;
         expect(edgeRemoved2, 'vertices don\'t exist').to.be.false;
         expect(edgeRemoved3, 'edge doesn\'t exist').to.be.false;
-        expect(edgeRemoved4, 'sink equals source').to.be.false;
+        expect(edgeRemoved4, 'target equals source').to.be.false;
         expect(edgeRemoved5, 'edge doesn\'t exist').to.be.false;
       });
     });

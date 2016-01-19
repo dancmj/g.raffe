@@ -8,6 +8,6 @@
       'ui.bootstrap',
       'mainCtrl',
       'homeCtrl',
-      'graffeDirective'
+      'graffeDrctv'
     ]);
 })();

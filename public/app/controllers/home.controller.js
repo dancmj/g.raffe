@@ -9,6 +9,7 @@
 
   function HomeController($rootScope, $location) {
     var vm = this;
-    var graph = graffe.new();
+    vm.graph = graffe.new();
+
   }
 })();

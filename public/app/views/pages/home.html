@@ -1,5 +1,6 @@
-<section id="home" class="row">
+<section id="home" class="row" ng-controller="HomeController as home">
   <div class="col-sm-12">
     <graffe graph="home.graph"></graffe>
+    home: {{home.graph.vertices.length}}
   </div>
 </section>

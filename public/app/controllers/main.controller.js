@@ -5,14 +5,11 @@
     .module('mainCtrl', [])
     .controller('MainController', MainController);
 
-  MainController.$inject = ['$rootScope', '$location', '$window'];
+  MainController.$inject = ['$rootScope', '$window'];
 
-  function MainController($rootScope, $location, $window) {
+  function MainController($rootScope, $window) {
     var vm = this;
 
-    $rootScope.$watch(function(){
-      console.log('asdfasdf')
-    });
-    angular.element($window).on('resize',function(){$rootScope.$apply()});
+    angular.element($window).on('resize', function(){ $rootScope.$apply() })
   }
 })();

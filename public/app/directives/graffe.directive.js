@@ -12,7 +12,8 @@
       link: link,
       restrict: 'E',
       scope: {
-        graph: '='
+        graph: '=',
+        settings: '='
       }
     };
     return directive;
@@ -21,23 +22,33 @@
       el = el[0];
       var width;
       var height;
-      var graph = scope.graph;
-      var svg = d3.select(el).append("svg");
-      var nodes = graph.vertices;
-      var links = graph.edges;
-      var force = d3.layout.force();
-      var node = svg.selectAll(".node");
-      var link = svg.selectAll(".link");
+      var graph    = scope.graph;
+      var settings = scope.settings;
+      var svg      = d3.select(el).append("svg");
+      var force    = d3.layout.force();
+      var node     = svg.selectAll(".node");
+      var nodes    = graph.vertices;
+      var link     = svg.selectAll(".link");
+      var links    = graph.edges;
+
+      svg.style("opacity", 1e-6)
+         .transition()
+         .duration(1000)
+         .style("opacity", 1);
 
       scope.$watch(function(){
         start();
-        width = el.clientWidth;
+        width  = el.clientWidth;
         height = el.clientHeight;
         return width;
       }, resize);
 
       function resize() {
-        svg.attr({width: width, height: height - 5});
+        svg.attr({
+          width: width,
+          height: height - 5
+        });
+
         force.nodes(nodes)
              .links(links)
              .size([width, height])
@@ -47,11 +58,17 @@
       function start() {
         link = link.data(force.links(), function(d) { return d.source.name + "-" + d.target.name; });
         link.enter().insert("line", ".node").attr("class", "link");
-        console.log(link);
         link.exit().remove();
 
         node = node.data(force.nodes(), function(d) {return d.name;});
-        node.enter().append("circle").attr("class", function(d) { return "node " + d.name; }).attr("r", 8);
+        node.enter().append("circle")
+            .attr("class", function(d) { return "node " + d.name; })
+            .attr("r", settings.radius)
+            .call(force.drag)
+            .style("fill", randomColor())
+            .on("mousedown", function() {
+              d3.event.stopPropagation();
+            });
         node.exit().remove();
 
         force.start();

@@ -10,8 +10,5 @@
   function HomeController($rootScope, $location) {
     var vm = this;
     vm.graph = graffe.new();
-    vm.settings = {
-      radius: 10
-    }
   }
 })();

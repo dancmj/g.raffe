@@ -23,13 +23,16 @@
       var width;
       var height;
       var graph    = scope.graph;
-      var settings = scope.settings;
       var svg      = d3.select(el).append("svg");
       var force    = d3.layout.force();
       var node     = svg.selectAll(".node");
       var nodes    = graph.vertices;
       var link     = svg.selectAll(".link");
       var links    = graph.edges;
+      var settings = {
+        radius: 20,
+        radiusHeld: 30
+      };
 
       svg.style("opacity", 1e-6)
          .transition()
@@ -52,7 +55,11 @@
         force.nodes(nodes)
              .links(links)
              .size([width, height])
+             .charge(-400)
+             .linkDistance(50)
              .on("tick", tick);
+        force.drag()
+             .on("dragstart", dragStart);
       }
 
       function start() {
@@ -81,6 +88,13 @@
             .attr("y1", function(d) { return d.source.y; })
             .attr("x2", function(d) { return d.target.x; })
             .attr("y2", function(d) { return d.target.y; });
+      }
+
+      function dragStart(d) {
+        d3.select(this).classed("fixed", d.fixed = true)
+          .transition()
+          .ease("elastic")
+          .duration(500);
       }
     }
   }

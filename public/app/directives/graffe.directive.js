@@ -23,7 +23,10 @@
       var width;
       var height;
       var graph    = scope.graph;
-      var svg      = d3.select(el).append("svg");
+      var svg      = d3.select(el)
+                       .on("touchstart", noZoom)
+                       .on("touchmove", noZoom)
+                       .append("svg");
       var force    = d3.layout.force();
       var node     = svg.selectAll(".node");
       var nodes    = graph.vertices;
@@ -31,7 +34,7 @@
       var links    = graph.edges;
       var settings = {
         radius: 20,
-        radiusHeld: 30
+        radiusHeld: 36
       };
 
       svg.style("opacity", 1e-6)
@@ -55,11 +58,13 @@
         force.nodes(nodes)
              .links(links)
              .size([width, height])
-             .charge(-400)
-             .linkDistance(50)
+             .charge(-200)
+             .linkDistance(100)
              .on("tick", tick);
         force.drag()
-             .on("dragstart", dragStart);
+             .on("dragstart", dragStart)
+             .on("drag", dragged)
+             .on("dragend", dragEnded);
       }
 
       function start() {
@@ -73,9 +78,7 @@
             .attr("r", settings.radius)
             .call(force.drag)
             .style("fill", randomColor())
-            .on("mousedown", function() {
-              d3.event.stopPropagation();
-            });
+            .on("dblclick", dblClick);
         node.exit().remove();
 
         force.start();
@@ -91,10 +94,35 @@
       }
 
       function dragStart(d) {
-        d3.select(this).classed("fixed", d.fixed = true)
-          .transition()
+        var node = d3.select(this);
+
+        node.attr("class", "shadow");
+
+        node.transition()
           .ease("elastic")
-          .duration(500);
+          .duration(500)
+          .attr("r", settings.radiusHeld)
+          .classed("fixed", d.fixed = true);
+      }
+
+      function dragged() {
+      }
+
+      function dragEnded() {
+        var node = d3.select(this);
+        node.attr("class", "");
+        node.transition()
+          .ease("elastic")
+          .duration(500)
+          .attr("r", settings.radius);
+      }
+
+      function dblClick(d) {
+        d3.select(this).classed("fixed", d.fixed = false);
+      }
+
+      function noZoom() {
+        d3.event.preventDefault();
       }
     }
   }

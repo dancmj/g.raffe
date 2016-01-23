@@ -1,3 +1,4 @@
+//Binary Heap - Marijn Haverbeke http://eloquentjavascript.net/1st_edition/appendix2.html
 var BinaryHeap = (function() {
   function _BinaryHeap(scoreFunction) {
     this.content = [];

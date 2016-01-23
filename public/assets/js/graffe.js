@@ -41,7 +41,7 @@ var graffe = (function() {
 
   Graph.prototype = {
     findVertex: function(name) {
-      name = typeof name === 'number' || typeof name === 'string' ? name = name + '' : name = null;
+      name = typeof name === 'number' || typeof name === 'string' ? name + '' : null;
       if (!name) return false;
       return _.find(this.vertices, {
         'name': name
@@ -49,16 +49,14 @@ var graffe = (function() {
     },
 
     addVertex: function(newVertex) {
-      var name;
-      newVertex instanceof Vertex ? name = newVertex.name : name = newVertex;
-      name = typeof name === 'number' || typeof name === 'string' ? name = name + '' : name = null;
+      var name = newVertex instanceof Vertex ? newVertex.name + '' : newVertex;
 
-      if (!name) return false;
-
-      name = _.trunc(_.trim(name), {
+      //     regexp => https://regex101.com/r/tL0qW6/3
+      if (!name || !/^ *([a-z0-9][a-z0-9 ]*)+$/i.exec(name)) return false;
+      name = _.truncate(_.trim(name), {
         length: 10,
         omission: ''
-      });
+      }).replace(/ /g, '_');
 
       var repeatedVertex = this.findVertex(name);
       if (repeatedVertex) return repeatedVertex;

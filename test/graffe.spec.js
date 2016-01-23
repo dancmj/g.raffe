@@ -22,11 +22,16 @@ describe('#graffe.js', function() {
           edge: null
         });
       });
-      it('should limit and trim vertex names', function() {
+      it('should limit, trim and reformat vertex names', function() {
         var vertex1 = g.addVertex('ABCDEFGHIJKLMN');
         var vertex2 = g.addVertex('     ABCD     ');
+        var vertex3 = g.addVertex('AB 23 EF');
+        var vertex4 = g.addVertex(123);
+
         expect(vertex1.name).to.have.length(10);
-        expect(vertex2.name).to.have.length(4);
+        expect(vertex2.name).to.equal('ABCD');
+        expect(vertex3.name).to.equal('AB_23_EF');
+        expect(vertex4.name).to.be.a('string');
       });
       it('should not add repeated vertex names', function() {
         var vertex1 = g.addVertex('test');
@@ -36,9 +41,11 @@ describe('#graffe.js', function() {
       it('should not add invalid name', function(){
         var vertex1 = g.addVertex('');
         var vertex2 = g.addVertex();
+        var vertex3 = g.addVertex('                ');
 
         expect(vertex1).to.be.false;
         expect(vertex2).to.be.false;
+        expect(vertex3).to.be.false;
         expect(g.vertices).to.be.empty;
       });
     });
@@ -160,10 +167,10 @@ describe('#graffe.js', function() {
       });
       it('should change tag to default value if tag is invalid', function() {
         var properties = {
-          cost: "test",
-          maxFlow: "test",
-          minFlow: "test",
-          flow: "test"
+          cost: 'test',
+          maxFlow: 'test',
+          minFlow: 'test',
+          flow: 'test'
         };
         var edge = g.addEdge('A', 'B', properties);
         expect(edge.cost, 'cost').to.equal(0);

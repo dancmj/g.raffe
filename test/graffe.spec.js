@@ -42,10 +42,12 @@ describe('#graffe.js', function() {
         var vertex1 = g.addVertex('');
         var vertex2 = g.addVertex();
         var vertex3 = g.addVertex('                ');
+        var vertex4 = g.addVertex('&(@#*"!');
 
         expect(vertex1).to.be.false;
         expect(vertex2).to.be.false;
         expect(vertex3).to.be.false;
+        expect(vertex4).to.be.false;
         expect(g.vertices).to.be.empty;
       });
     });

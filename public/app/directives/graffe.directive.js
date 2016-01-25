@@ -102,7 +102,7 @@
           .ease("elastic")
           .duration(500)
           .attr("r", settings.radiusHeld)
-          .classed("fixed", d.fixed = true);
+          .attr("fixed", d.fixed = true);
       }
 
       function dragged() {
@@ -118,7 +118,7 @@
       }
 
       function dblClick(d) {
-        d3.select(this).classed("fixed", d.fixed = false);
+        d3.select(this).attr("fixed", d.fixed = false);
       }
 
       function noZoom() {

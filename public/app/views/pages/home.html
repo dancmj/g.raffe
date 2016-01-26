@@ -1,10 +1,18 @@
-<section id="home" class="row" ng-controller="HomeController as home">
-  <div class="col-sm-12">
-    <graffe graph="home.graph"></graffe>
-  </div>
+<section id="home" ng-controller="HomeController as home">
+  <div class="row">
+    <div class="col-sm-12">
+      <graffe graph="home.graph" reset="home.reset"></graffe>
+    </div>
 
-  <div class="col-sm-12">
-    <button class="btn btn-primary" ng-click="home.graph.addVertex(home.graph.vertices.length + '')">add vertex</button>
-    <button class="btn btn-primary" ng-click="home.graph.addEdge('R', 'Z')">add vertices + link</button>
+    <div class="col-sm-12">
+      <button class="btn btn-primary" ng-click="home.newVertex()">Add Vertex {{home.inputName1}}</button>
+      <button class="btn btn-primary" ng-click="home.newEdge()">Link: {{home.inputName1}} & {{home.inputName2}}</button>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-1">
+      <input type="text" ng-model="home.inputName1">
+      <input type="text" ng-model="home.inputName2">
+    </div>
   </div>
 </section>

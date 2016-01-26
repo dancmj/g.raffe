@@ -13,13 +13,15 @@
       restrict: 'E',
       scope: {
         graph: '=',
-        settings: '='
+        reset: '='
       }
     };
     return directive;
 
     function link(scope, el, attrs) {
-      el = el[0];
+      el           = el[0];
+      scope.reset  = reset;
+
       var width;
       var height;
       var graph    = scope.graph;
@@ -43,7 +45,6 @@
          .style("opacity", 1);
 
       scope.$watch(function(){
-        start();
         width  = el.clientWidth;
         height = el.clientHeight;
         return width;
@@ -55,6 +56,10 @@
           height: height - 5
         });
 
+        reset();
+      }
+
+      function reset() {
         force.nodes(nodes)
              .links(links)
              .size([width, height])
@@ -65,6 +70,8 @@
              .on("dragstart", dragStart)
              .on("drag", dragged)
              .on("dragend", dragEnded);
+
+        start();
       }
 
       function start() {
@@ -73,20 +80,30 @@
         link.exit().remove();
 
         node = node.data(force.nodes(), function(d) {return d.name;});
-        node.enter().append("circle")
+        var g = node.enter().append("g")
             .attr("class", function(d) { return "node " + d.name; })
-            .attr("r", settings.radius)
             .call(force.drag)
-            .style("fill", randomColor())
-            .on("dblclick", dblClick);
-        node.exit().remove();
+            .style("fill", randomColor);
 
+        g.append("circle")
+            .attr("r", settings.radius)
+            .on("dblclick", dblClick);
+
+        g.append("text")
+            .attr("dy", ".35em")
+            .attr("text-anchor", "middle")
+            .text(function(d) {
+              return d.name;
+            });
+
+        node.exit().remove();
         force.start();
       }
 
       function tick() {
-        node.attr("cx", function(d) { return d.x; })
-            .attr("cy", function(d) { return d.y; });
+        node.attr("transform", function(d) {
+          return "translate(" + d.x + "," + d.y + ")";
+        });
         link.attr("x1", function(d) { return d.source.x; })
             .attr("y1", function(d) { return d.source.y; })
             .attr("x2", function(d) { return d.target.x; })
@@ -94,7 +111,7 @@
       }
 
       function dragStart(d) {
-        var node = d3.select(this);
+        var node = d3.select(this).select("circle");
 
         node.attr("class", "shadow");
 
@@ -109,7 +126,7 @@
       }
 
       function dragEnded() {
-        var node = d3.select(this);
+        var node = d3.select(this).select("circle");
         node.attr("class", "");
         node.transition()
           .ease("elastic")
@@ -118,7 +135,8 @@
       }
 
       function dblClick(d) {
-        d3.select(this).attr("fixed", d.fixed = false);
+        d3.select(this).select("circle")
+          .attr("fixed", d.fixed = false);
       }
 
       function noZoom() {

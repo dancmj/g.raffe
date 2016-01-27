@@ -1,18 +1,37 @@
 <section id="home" ng-controller="HomeController as home">
-  <div class="row">
-    <div class="col-sm-12">
+  <section class="row">
+    <div class="col-sm-12 col-md-8">
       <graffe graph="home.graph" reset="home.reset"></graffe>
     </div>
-
-    <div class="col-sm-12">
-      <button class="btn btn-primary" ng-click="home.newVertex()">Add Vertex {{home.inputName1}}</button>
-      <button class="btn btn-primary" ng-click="home.newEdge()">Link: {{home.inputName1}} & {{home.inputName2}}</button>
+    <div class="col-md-4">
+      <div class="row controls-header">
+        <div class="col-xs-8">
+          <h4>g.raffe</h4>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12">
+          <div class="row">
+            <div class="col-xs-6">
+              <label>Source:</label>
+              <input class="form-control" placeholder="Vertex A"/>
+            </div>
+            <div class="col-xs-6">
+              <label>Sink:</label>
+              <input class="form-control" placeholder="Vertex B"/>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-6 col-md-12">
+          <button type="button" class="btn btn-info" >A</button>
+        </div>
+        <div class="col-xs-6 col-md-12">
+          <select class="form-control"></select>
+          <!--<select class="form-control" ng-model="placement.selected" ng-options="o as o for o in placement.options"></select>-->
+        </div>
+      </div>
     </div>
-  </div>
-  <div class="row">
-    <div class="col-sm-1">
-      <input type="text" ng-model="home.inputName1">
-      <input type="text" ng-model="home.inputName2">
-    </div>
-  </div>
+  </section>
 </section>

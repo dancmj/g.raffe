@@ -137,6 +137,7 @@
       function dblClick(d) {
         d3.select(this).select("circle")
           .attr("fixed", d.fixed = false);
+        force.start();
       }
 
       function noZoom() {

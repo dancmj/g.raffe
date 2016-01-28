@@ -9,20 +9,35 @@
 
   function HomeController() {
     var vm = this;
-    vm.newVertex  = newVertex;
-    vm.newEdge    = newEdge;
-    vm.inputName1 = "";
-    vm.inputName2 = "";
+    vm.addVertex  = addVertex;
+    vm.addEdge    = addEdge;
+    vm.vertexL    = '';
+    vm.vertexR    = '';
     vm.reset      = null;
     vm.graph      = graffe.new();
+    vm.algorithms = {
+      options: [
+        'Breadth First Search',
+        'Depth First Search',
+        "Kruskal's",
+        "Dijkstra's",
+        "Prim's"
+      ],
+      selected: "Breadth First Search"
+    };
 
-    function newVertex() {
-      vm.graph.addVertex(vm.inputName1);
-      vm.reset();
+    function addVertex() {
+      vm.graph.addVertex(vm.vertexL);
+      vm.reset()
     }
 
-    function newEdge() {
-      vm.graph.addEdge(vm.inputName1, vm.inputName2);
+    function addEdge(direction) {
+      if(direction === ">"){
+        vm.graph.addEdge(vm.vertexL, vm.vertexR);
+      }else if(direction === "<"){
+        vm.graph.addEdge(vm.vertexR, vm.vertexL);
+      }
+
       vm.reset();
     }
   }

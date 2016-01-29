@@ -116,10 +116,10 @@
         node.attr("class", "shadow");
 
         node.transition()
-          .ease("elastic")
-          .duration(500)
-          .attr("r", settings.radiusHeld)
-          .attr("fixed", d.fixed = true);
+            .ease("elastic")
+            .duration(500)
+            .attr("r", settings.radiusHeld)
+            .attr("fixed", d.fixed = true);
       }
 
       function dragged() {
@@ -129,9 +129,9 @@
         var node = d3.select(this).select("circle");
         node.attr("class", "");
         node.transition()
-          .ease("elastic")
-          .duration(500)
-          .attr("r", settings.radius);
+            .ease("elastic")
+            .duration(500)
+            .attr("r", settings.radius);
       }
 
       function dblClick(d) {

@@ -225,8 +225,8 @@ var graffe = (function() {
     prim: function(startVertex) {
       startVertex = this.findVertex(startVertex);
       if (!startVertex) return false;
-      this.directed = false;
 
+      this.directed = false;
       startVertex.tag.key = 0;
 
       var heap = BinaryHeap.create(function(vertex) {
@@ -267,7 +267,6 @@ var graffe = (function() {
       this.directed = false;
 
       var counter = 0;
-      var colorHelper;
       var heap = BinaryHeap.create(function(edge) {
         return edge.cost;
       });
@@ -284,11 +283,10 @@ var graffe = (function() {
         var e = heap.pop();
 
         if (e.source.color != e.target.color) {
-          colorHelper = e.target.color;
           e.color = 'path';
 
           _.forEach(this.vertices, function(vertex) {
-            if (vertex.color == colorHelper) vertex.color = e.source.color;
+            if (vertex.color == e.target.color) vertex.color = e.source.color;
           });
           counter++;
         }
@@ -305,11 +303,11 @@ var graffe = (function() {
         return false;
       }
 
-      var _this = this,
-        heap = BinaryHeap.create(function(vertex) {
+      var _this = this;
+      var heap = BinaryHeap.create(function(vertex) {
           return vertex.tag.key;
-        }),
-        path = [];
+        });
+      var path = [];
 
       startVertex.tag.key = 0;
       heap.push(startVertex);
@@ -405,8 +403,8 @@ var graffe = (function() {
     },
 
     matrix: function() {
-      var vertices = this.vertices,
-        _this = this;
+      var vertices = this.vertices;
+      var _this = this;
 
       _this.adjacencyMatrix = {};
 

@@ -32,7 +32,7 @@
       var force    = d3.layout.force();
       var node     = svg.selectAll(".node");
       var nodes    = graph.vertices;
-      var link     = svg.selectAll(".link");
+      var link     = svg.selectAll("path");
       var links    = graph.edges;
       var settings = {
         radius: 20,
@@ -40,9 +40,22 @@
       };
 
       svg.style("opacity", 1e-6)
-         .transition()
-         .duration(1000)
-         .style("opacity", 1);
+          .transition()
+          .duration(1000)
+          .style("opacity", 1);
+
+      svg.append("defs").selectAll("marker")
+          .data(["-1", "path", "black", "gray"])
+          .enter().append("marker")
+          .attr("id", function(d) { return d; })
+          .attr("viewBox", "0 -5 10 10")
+          .attr("refX", settings.radius + 5)
+          .attr("refY", -2.5)
+          .attr("markerWidth", 12)
+          .attr("markerHeight", 12)
+          .attr("orient", "auto")
+          .append("path")
+          .attr("d", "M0,-5L10,0L0,5");
 
       scope.$watch(function(){
         width  = el.clientWidth;
@@ -53,7 +66,7 @@
       function resize() {
         svg.attr({
           width: width,
-          height: height - 5
+          height: height - 10
         });
 
         reset();
@@ -76,7 +89,9 @@
 
       function start() {
         link = link.data(force.links(), function(d) { return d.source.name + "-" + d.target.name; });
-        link.enter().insert("line", ".node").attr("class", "link");
+        link.enter().append("path")
+            .attr("class", function(d) { return "link " + d.color; })
+            .attr("marker-end", function(d) { return "url(#" + d.color + ")";});
         link.exit().remove();
 
         node = node.data(force.nodes(), function(d) {return d.name;});
@@ -102,12 +117,16 @@
 
       function tick() {
         node.attr("transform", function(d) {
+          d.x = Math.max(settings.radius, Math.min(width - settings.radius, d.x));
+          d.y = Math.max(settings.radius, Math.min(height - settings.radius, d.y));
           return "translate(" + d.x + "," + d.y + ")";
         });
-        link.attr("x1", function(d) { return d.source.x; })
-            .attr("y1", function(d) { return d.source.y; })
-            .attr("x2", function(d) { return d.target.x; })
-            .attr("y2", function(d) { return d.target.y; });
+        link.attr("d", function(d) {
+          var dx = d.target.x - d.source.x;
+          var dy = d.target.y - d.source.y;
+          var dr = Math.sqrt(dx * dx + dy * dy);
+          return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
+        });
       }
 
       function dragStart(d) {

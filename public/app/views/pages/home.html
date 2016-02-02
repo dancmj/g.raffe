@@ -27,11 +27,11 @@
         <tab heading="Play!">
           <div class="row">
             <div class="col-xs-6 col-md-12">
-              <select class="form-control" ng-model="home.algorithms.selected" ng-options="o as o for o in home.algorithms.options"></select>
+              <select class="form-control" ng-model="home.algorithms.selected" ng-options="o as o.name for o in home.algorithms.options"></select>
             </div>
             <div class="col-xs-3 col-md-12">
               <button class="btn btn-danger text-center"><i class="fa fa-undo"></i></button>
-              <button class="btn btn-primary text-center"><i class="fa fa-play"></i></button>
+              <button class="btn btn-primary text-center" ng-click="home.runAlgorithm()"><i class="fa fa-play"></i></button>
               <button class="btn btn text-center"><i class="fa fa-step-backward"></i></button>
               <button class="btn btn text-center"><i class="fa fa-step-forward"></i></button>
               <button class="btn btn-primary text-center"><i class="fa fa-stop"></i></i></button>

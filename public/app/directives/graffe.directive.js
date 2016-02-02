@@ -89,9 +89,10 @@
 
       function start() {
         link = link.data(force.links(), function(d) { return d.source.name + "-" + d.target.name; });
-        link.enter().insert("path", ".node")
-            .attr("class", function(d) { return "link " + d.color; })
-            .attr("marker-end", function(d) { return "url(#" + d.color + ")";});
+        link.enter().insert("path", ".node");
+        svg.selectAll("path")
+           .attr("class", function(d) { return "link " + d.color; })
+           .attr("marker-end", function(d) { return "url(#" + d.color + ")";});
         link.exit().remove();
 
         node = node.data(force.nodes(), function(d) {return d.name;});

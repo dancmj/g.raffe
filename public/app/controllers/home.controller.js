@@ -45,6 +45,7 @@
 
     function runAlgorithm() {
       vm.graph[vm.algorithms.selected.method](vm.vertexL);
+      vm.reset();
     }
   }
 })();

@@ -34,9 +34,9 @@
     }
 
     function addEdge(direction) {
-      if(direction === ">"){
+      if(direction === '>'){
         vm.graph.addEdge(vm.vertexL, vm.vertexR);
-      }else if(direction === "<"){
+      }else if(direction === '<'){
         vm.graph.addEdge(vm.vertexR, vm.vertexL);
       }
 

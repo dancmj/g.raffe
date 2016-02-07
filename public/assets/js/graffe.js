@@ -2,10 +2,11 @@ var graffe = (function() {
   function Vertex(name) {
     this.name = name;
     this.adjacents = [];
-    this.distanceFromRoot = 0;
     this.maxFlow = null;
     this.minFlow = 0;
+
     this.color = -1; // -1 -> unexplored ; path -> treePath ; black -> explored ; gray -> on queue ;
+    this.distanceFromRoot = 0;
     this.tag = {
       key: Infinity,
       parent: null,
@@ -24,9 +25,10 @@ var graffe = (function() {
     this.minFlow = !properties.minFlow || properties.minFlow < 0 ? 0 : properties.minFlow;
     this.maxFlow = !properties.maxFlow ? Infinity : properties.maxFlow < this.minFlow ? this.minFlow : properties.maxFlow;
     this.flow = !properties.flow || properties.flow < 0 ? 0 : properties.flow > this.maxFlow ? this.maxFlow : properties.flow;
+
+    this.color = -1;
     this.redge = null;
     this.fake = false;
-    this.color = -1;
     this.setColor = function(newColor) {
       this.color = this.redge.color = newColor;
     }
@@ -40,7 +42,7 @@ var graffe = (function() {
   }
 
   Graph.prototype = {
-    findVertex: function(name) {
+    findVertex: function findVertex(name) {
       name = typeof name === 'number' || typeof name === 'string' ? name + '' : null;
       if (!name) return false;
       return _.find(this.vertices, {
@@ -48,7 +50,7 @@ var graffe = (function() {
       }) || false;
     },
 
-    addVertex: function(newVertex) {
+    addVertex: function addVertex(newVertex) {
       var name = newVertex instanceof Vertex ? newVertex.name + '' : newVertex;
 
       //     regexp => https://regex101.com/r/tL0qW6/3
@@ -65,7 +67,7 @@ var graffe = (function() {
       return _.last(this.vertices);
     },
 
-    removeVertex: function(name) {
+    removeVertex: function removeVertex(name) {
       var _this = this;
       var eraseeVertex = this.findVertex(name);
 
@@ -82,13 +84,13 @@ var graffe = (function() {
       return true;
     },
 
-    findEdge: function(source, target) {
+    findEdge: function findEdge(source, target) {
       return _.find(this.edges, function(edge) {
         return edge.target.name == target && edge.source.name == source;
       }) || false;
     },
 
-    addEdge: function(source, target, properties) {
+    addEdge: function addEdge(source, target, properties) {
       if (!source || !target || source == target) return false;
 
       if (!properties) {
@@ -125,7 +127,7 @@ var graffe = (function() {
       return _.last(this.edges);
     },
 
-    removeEdge: function(source, target) {
+    removeEdge: function removeEdge(source, target) {
       source = this.findVertex(source);
       target = this.findVertex(target);
 
@@ -151,7 +153,7 @@ var graffe = (function() {
     },
 
     //////////////////////////////////////
-    isBipartite: function() {
+    isBipartite: function isBipartite() {
       if (!this.vertices.length || !this.edges.length) return true;
 
       var queue = [];
@@ -175,7 +177,7 @@ var graffe = (function() {
       return result;
     },
 
-    bfs: function(startVertex) {
+    bfs: function bfs(startVertex) {
       startVertex = this.findVertex(startVertex);
       if (!startVertex) return false;
 
@@ -203,7 +205,7 @@ var graffe = (function() {
       return true;
     },
 
-    dfs: function(currentVertex) {
+    dfs: function dfs(currentVertex) {
       currentVertex = this.findVertex(currentVertex)
 
       if (!currentVertex) return false;
@@ -222,7 +224,7 @@ var graffe = (function() {
       return true;
     },
 
-    prim: function(startVertex) {
+    prim: function prim(startVertex) {
       startVertex = this.findVertex(startVertex);
       if (!startVertex) return false;
 
@@ -261,7 +263,7 @@ var graffe = (function() {
       return true;
     },
 
-    kruskal: function() {
+    kruskal: function kruskal() {
       if (!this.vertices.length || !this.edges.length) return false;
 
       this.directed = false;
@@ -295,7 +297,7 @@ var graffe = (function() {
       return true;
     },
 
-    dijkstra: function(startVertex, goalVertex) {
+    dijkstra: function dijkstra(startVertex, goalVertex) {
       startVertex = this.findVertex(startVertex);
       goalVertex = this.findVertex(goalVertex);
 
@@ -402,7 +404,7 @@ var graffe = (function() {
       return goalVertex.tag.key;
     },
 
-    matrix: function() {
+    matrix: function matrix() {
       var vertices = this.vertices;
       var _this = this;
 
@@ -432,10 +434,28 @@ var graffe = (function() {
       return _this.adjacencyMatrix;
     },
 
-    floydWarshall: function() {
+    floydWarshall: function floydWarshall() {
 
-    }
+    },
     //////////////////////////////////////
+
+    cleanUp: function() {
+      var _this = this;
+
+      _.forEach(_this.edges, function(edge) {
+        edge.setColor(-1);
+      });
+
+      _.forEach(_this.vertices, function(vertex) {
+        vertex.color = -1;
+        vertex.distanceFromRoot = 0;
+        vertex.tag = {
+          key: Infinity,
+          parent: null,
+          edge: null
+        };
+      });
+    }
   };
 
   function newGraph() {

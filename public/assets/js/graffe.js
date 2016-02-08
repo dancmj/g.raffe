@@ -44,6 +44,7 @@ var graffe = (function() {
   Graph.prototype = {
     findVertex: function findVertex(name) {
       name = typeof name === 'number' || typeof name === 'string' ? name + '' : null;
+
       if (!name) return false;
       return _.find(this.vertices, {
         'name': name
@@ -53,8 +54,8 @@ var graffe = (function() {
     addVertex: function addVertex(newVertex) {
       var name = newVertex instanceof Vertex ? newVertex.name + '' : newVertex;
 
-      //     regexp => https://regex101.com/r/tL0qW6/3
-      if (!name || !/^ *([a-z0-9][a-z0-9 ]*)+$/i.exec(name)) return false;
+      if (!name || !/^ *([a-z0-9][a-z0-9 ]*)+$/i.exec(name)) return false;       //regexp => https://regex101.com/r/tL0qW6/3
+
       name = _.truncate(_.trim(name), {
         length: 10,
         omission: ''
@@ -68,10 +69,11 @@ var graffe = (function() {
     },
 
     removeVertex: function removeVertex(name) {
-      var _this = this;
       var eraseeVertex = this.findVertex(name);
 
       if (!eraseeVertex) return false;
+
+      var _this = this;
 
       _.forEachRight(eraseeVertex.adjacents, function(edge) {
         !edge.fake ? _this.removeEdge(eraseeVertex.name, edge.target.name) : _this.removeEdge(edge.target.name, eraseeVertex.name);
@@ -159,9 +161,10 @@ var graffe = (function() {
       var queue = [];
       var result = true;
       var startVertex = this.vertices[0];
-      startVertex.color = 1;
 
+      startVertex.color = 1;
       queue.push(startVertex);
+
       while (queue.length > 0 && result) {
         var v = queue.shift();
         _.forEach(v.adjacents, function(edge) {
@@ -179,13 +182,13 @@ var graffe = (function() {
 
     bfs: function bfs(startVertex) {
       startVertex = this.findVertex(startVertex);
-      if (!startVertex) return false;
 
-      startVertex.color = 'gray';
+      if (!startVertex) return false;
 
       var queue = [];
       var _this = this;
 
+      startVertex.color = 'gray';
       queue.push(startVertex);
 
       while (queue.length > 0) {
@@ -206,13 +209,14 @@ var graffe = (function() {
     },
 
     dfs: function dfs(currentVertex) {
-      currentVertex = this.findVertex(currentVertex)
+      currentVertex = this.findVertex(currentVertex);
 
       if (!currentVertex) return false;
 
       var _this = this;
 
       currentVertex.color = 'black';
+
       _.forEach(currentVertex.adjacents, function(edge) {
         if (edge.target.color == -1 && !(edge.fake && _this.directed)) {
           edge.setColor('path');
@@ -226,11 +230,11 @@ var graffe = (function() {
 
     prim: function prim(startVertex) {
       startVertex = this.findVertex(startVertex);
+
       if (!startVertex) return false;
 
       this.directed = false;
       startVertex.tag.key = 0;
-
       var heap = BinaryHeap.create(function(vertex) {
         return vertex.tag.key
       });
@@ -267,7 +271,6 @@ var graffe = (function() {
       if (!this.vertices.length || !this.edges.length) return false;
 
       this.directed = false;
-
       var counter = 0;
       var heap = BinaryHeap.create(function(edge) {
         return edge.cost;
@@ -306,10 +309,10 @@ var graffe = (function() {
       }
 
       var _this = this;
-      var heap = BinaryHeap.create(function(vertex) {
-          return vertex.tag.key;
-        });
       var path = [];
+      var heap = BinaryHeap.create(function(vertex) {
+        return vertex.tag.key;
+      });
 
       startVertex.tag.key = 0;
       heap.push(startVertex);
@@ -351,6 +354,7 @@ var graffe = (function() {
       heap = BinaryHeap.create(function(edge) {
         return edge.cost;
       }); //New heap with unused edges
+
       _.forEach(_this.edges, function(edge) { //Iterate over non-path edges
         edge.color !== 'path' ? heap.push(edge) : edge.setColor(-1);
         // edge not in path? push it to heap : reset color for edge in path
@@ -367,8 +371,7 @@ var graffe = (function() {
               if (temporalSource.tag.parent == e.target) return false;
               temporalSource = temporalSource.tag.parent;
             }
-          }
-          //No negcycles found, add the edge to the graph and change all the children.
+          } //No negcycles found, add the edge to the graph and change all the children.
 
           e.target.tag.edge.setColor(-1); //Revert previous edge to parent color.
           e.target.tag.key = e.cost + e.source.tag.key;
@@ -395,18 +398,20 @@ var graffe = (function() {
       }
 
       p = goalVertex;
+
       while (p) {
         p.color = 'path';
         path.unshift(p);
         if (p.tag.edge) p.tag.edge.setColor('path');
         p = p.tag.parent;
       }
+
       return goalVertex.tag.key;
     },
 
     matrix: function matrix() {
-      var vertices = this.vertices;
       var _this = this;
+      var vertices = _this.vertices;
 
       _this.adjacencyMatrix = {};
 

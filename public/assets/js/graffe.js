@@ -183,8 +183,9 @@ var graffe = (function() {
     bfs: function bfs(startVertex) {
       startVertex = this.findVertex(startVertex);
 
-      if (!startVertex) return false;
+      if (!startVertex) return { error: 'Vertex doesn\'t exist.' };
 
+      var events = [];
       var queue = [];
       var _this = this;
 
@@ -205,7 +206,8 @@ var graffe = (function() {
         v.color = 'black';
       }
 
-      return true;
+      _this.cleanUp();
+      return {events: events};
     },
 
     dfs: function dfs(currentVertex) {

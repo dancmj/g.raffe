@@ -283,22 +283,24 @@ describe('#graffe.js', function() {
       });
     });
     describe('#breadthFirstSearch()', function(){
-      it('should return false if start vertex is not found', function(){
-        var successfulbfs = g.bfs('M');
-        expect(successfulbfs, 'Breadth First Search success').to.be.false;
+      it('should return error if start vertex is not found', function(){
+        var unSuccessfulbfs = g.bfs('M');
+
+        expect(unSuccessfulbfs.hasOwnProperty('error'), 'Breadth First Search success').to.be.true;
+        expect(unSuccessfulbfs.error, 'Breadth First Search success').to.be.a('string');
       });
       context('Undirected Graph', function(){
         it('should create a tree if bfs is completed successfully', function(){
-          var edgeAB = g.addEdge('A', 'B'),//
-              edgeAE = g.addEdge('A', 'E'),//    A - B   C - D
-              edgeBF = g.addEdge('B', 'F'),//    |   | / | / |   GRAPH
-              edgeCD = g.addEdge('C', 'D'),//    E   F - G - H
-              edgeCG = g.addEdge('C', 'G'),
-              edgeCF = g.addEdge('C', 'F'),
-              edgeDH = g.addEdge('D', 'H'),//    1 - 0   2 - 3
-              edgeDG = g.addEdge('D', 'G'),//    |   | / | / |  EXPECTED
-              edgeFG = g.addEdge('F', 'G'),//    2   1 - 2 - 3  DISTANCE
-              edgeGH = g.addEdge('G', 'H');
+          var edgeAB = g.addEdge('A', 'B');//
+          var edgeAE = g.addEdge('A', 'E');//    A - B   C - D
+          var edgeBF = g.addEdge('B', 'F');//    |   | / | / |   GRAPH
+          var edgeCD = g.addEdge('C', 'D');//    E   F - G - H
+          var edgeCG = g.addEdge('C', 'G');
+          var edgeCF = g.addEdge('C', 'F');
+          var edgeDH = g.addEdge('D', 'H');//    1 - 0   2 - 3
+          var edgeDG = g.addEdge('D', 'G');//    |   | / | / |  EXPECTED
+          var edgeFG = g.addEdge('F', 'G');//    2   1 - 2 - 3  DISTANCE
+          var edgeGH = g.addEdge('G', 'H');
           g.directed = false;
 
           var successfulbfs = g.bfs('B');

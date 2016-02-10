@@ -312,14 +312,14 @@ describe('#graffe.js', function() {
           expect(g.findVertex('G').distanceFromRoot, 'vertex G distance').to.equal(2);
           expect(g.findVertex('H').distanceFromRoot, 'vertex H distance').to.equal(3);
 
-          expect(g.findVertex('A').color, 'vertex A color').to.equal('black');
-          expect(g.findVertex('B').color, 'vertex B color').to.equal('black');
-          expect(g.findVertex('C').color, 'vertex C color').to.equal('black');
-          expect(g.findVertex('D').color, 'vertex D color').to.equal('black');
-          expect(g.findVertex('E').color, 'vertex E color').to.equal('black');
-          expect(g.findVertex('F').color, 'vertex F color').to.equal('black');
-          expect(g.findVertex('G').color, 'vertex G color').to.equal('black');
-          expect(g.findVertex('H').color, 'vertex H color').to.equal('black');
+          expect(g.findVertex('A').color, 'vertex A color').to.equal('explored');
+          expect(g.findVertex('B').color, 'vertex B color').to.equal('explored');
+          expect(g.findVertex('C').color, 'vertex C color').to.equal('explored');
+          expect(g.findVertex('D').color, 'vertex D color').to.equal('explored');
+          expect(g.findVertex('E').color, 'vertex E color').to.equal('explored');
+          expect(g.findVertex('F').color, 'vertex F color').to.equal('explored');
+          expect(g.findVertex('G').color, 'vertex G color').to.equal('explored');
+          expect(g.findVertex('H').color, 'vertex H color').to.equal('explored');
 
           expect(edgeAB.color, 'edge A - B').to.equal('path');
           expect(edgeAE.color, 'edge A - E').to.equal('path');
@@ -357,13 +357,13 @@ describe('#graffe.js', function() {
           expect(g.findVertex('H').distanceFromRoot,'vertex H distance').to.equal(3);
 
           expect(g.findVertex('A').color, 'vertex A color').to.equal(-1);
-          expect(g.findVertex('B').color, 'vertex B color').to.equal('black');
-          expect(g.findVertex('C').color, 'vertex C color').to.equal('black');
-          expect(g.findVertex('D').color, 'vertex D color').to.equal('black');
+          expect(g.findVertex('B').color, 'vertex B color').to.equal('explored');
+          expect(g.findVertex('C').color, 'vertex C color').to.equal('explored');
+          expect(g.findVertex('D').color, 'vertex D color').to.equal('explored');
           expect(g.findVertex('E').color, 'vertex E color').to.equal(-1);
-          expect(g.findVertex('F').color, 'vertex F color').to.equal('black');
-          expect(g.findVertex('G').color, 'vertex G color').to.equal('black');
-          expect(g.findVertex('H').color, 'vertex H color').to.equal('black');
+          expect(g.findVertex('F').color, 'vertex F color').to.equal('explored');
+          expect(g.findVertex('G').color, 'vertex G color').to.equal('explored');
+          expect(g.findVertex('H').color, 'vertex H color').to.equal('explored');
 
           expect(edgeAB.color, 'edge A - B').to.equal(-1);
           expect(edgeAE.color, 'edge A - E').to.equal(-1);
@@ -406,14 +406,14 @@ describe('#graffe.js', function() {
           expect(g.findVertex('G').distanceFromRoot, 'vertex G distance').to.equal(6);
           expect(g.findVertex('H').distanceFromRoot, 'vertex H distance').to.equal(5);
 
-          expect(g.findVertex('A').color, 'vertex A color').to.equal('black');
-          expect(g.findVertex('B').color, 'vertex B color').to.equal('black');
-          expect(g.findVertex('C').color, 'vertex C color').to.equal('black');
-          expect(g.findVertex('D').color, 'vertex D color').to.equal('black');
-          expect(g.findVertex('E').color, 'vertex E color').to.equal('black');
-          expect(g.findVertex('F').color, 'vertex F color').to.equal('black');
-          expect(g.findVertex('G').color, 'vertex G color').to.equal('black');
-          expect(g.findVertex('H').color, 'vertex H color').to.equal('black');
+          expect(g.findVertex('A').color, 'vertex A color').to.equal('explored');
+          expect(g.findVertex('B').color, 'vertex B color').to.equal('explored');
+          expect(g.findVertex('C').color, 'vertex C color').to.equal('explored');
+          expect(g.findVertex('D').color, 'vertex D color').to.equal('explored');
+          expect(g.findVertex('E').color, 'vertex E color').to.equal('explored');
+          expect(g.findVertex('F').color, 'vertex F color').to.equal('explored');
+          expect(g.findVertex('G').color, 'vertex G color').to.equal('explored');
+          expect(g.findVertex('H').color, 'vertex H color').to.equal('explored');
 
           expect(edgeAB.color, 'Edge A - B').to.equal('path');
           expect(edgeAE.color, 'Edge A - E').to.equal('path');
@@ -450,14 +450,14 @@ describe('#graffe.js', function() {
           expect(g.findVertex('G').distanceFromRoot, 'vertex G distance').to.equal(3);
           expect(g.findVertex('H').distanceFromRoot, 'vertex H distance').to.equal(4);
 
-          expect(g.findVertex('A').color, 'vertex A color').to.equal('black');
-          expect(g.findVertex('B').color, 'vertex B color').to.equal('black');
+          expect(g.findVertex('A').color, 'vertex A color').to.equal('explored');
+          expect(g.findVertex('B').color, 'vertex B color').to.equal('explored');
           expect(g.findVertex('C').color, 'vertex C color').to.equal(-1);
           expect(g.findVertex('D').color, 'vertex D color').to.equal(-1);
-          expect(g.findVertex('E').color, 'vertex E color').to.equal('black');
-          expect(g.findVertex('F').color, 'vertex F color').to.equal('black');
-          expect(g.findVertex('G').color, 'vertex G color').to.equal('black');
-          expect(g.findVertex('H').color, 'vertex H color').to.equal('black');
+          expect(g.findVertex('E').color, 'vertex E color').to.equal('explored');
+          expect(g.findVertex('F').color, 'vertex F color').to.equal('explored');
+          expect(g.findVertex('G').color, 'vertex G color').to.equal('explored');
+          expect(g.findVertex('H').color, 'vertex H color').to.equal('explored');
 
           expect(edgeAB.color, 'Edge A - B').to.equal('path');
           expect(edgeAE.color, 'Edge A - E').to.equal('path');
@@ -596,9 +596,9 @@ describe('#graffe.js', function() {
             expect(successfulDijkstra).to.equal(20);
 
             expect(vertex1.color, 'Vertex 1\'s color').to.be.equal('path');
-            expect(vertex2.color, 'Vertex 2\'s color').to.be.equal('black');
+            expect(vertex2.color, 'Vertex 2\'s color').to.be.equal('explored');
             expect(vertex3.color, 'Vertex 3\'s color').to.be.equal('path');
-            expect(vertex4.color, 'Vertex 4\'s color').to.be.equal('black');
+            expect(vertex4.color, 'Vertex 4\'s color').to.be.equal('explored');
             expect(vertex5.color, 'Vertex 5\'s color').to.be.equal('path');
             expect(vertex6.color, 'Vertex 6\'s color').to.be.equal('path');
 
@@ -629,7 +629,7 @@ describe('#graffe.js', function() {
 
               expect(vertexA.color, 'Vertex A\'s color').to.equal('path');
               expect(vertexB.color, 'Vertex B\'s color').to.equal('path');
-              expect(vertexC.color, 'Vertex C\'s color').to.equal('black');
+              expect(vertexC.color, 'Vertex C\'s color').to.equal('explored');
 
               expect(edgeAB.color, 'Edge A - B').to.equal('path');
               expect(edgeAC.color, 'Edge A - C').to.equal(-1);
@@ -651,7 +651,7 @@ describe('#graffe.js', function() {
 
               expect(vertexA.color, 'Vertex A\'s color').to.equal('path');
               expect(vertexB.color, 'Vertex B\'s color').to.equal('path');
-              expect(vertexC.color, 'Vertex C\'s color').to.equal('black');
+              expect(vertexC.color, 'Vertex C\'s color').to.equal('explored');
 
               expect(edgeAB.color, 'Edge A - B').to.equal('path');
               expect(edgeAC.color, 'Edge A - C').to.equal(-1);
@@ -686,11 +686,11 @@ describe('#graffe.js', function() {
             expect(successfulDijkstra).to.equal(26);
 
             expect(vertex1.color, 'Vertex 1\'s color').to.be.equal('path');
-            expect(vertex2.color, 'Vertex 2\'s color').to.be.equal('black');
+            expect(vertex2.color, 'Vertex 2\'s color').to.be.equal('explored');
             expect(vertex3.color, 'Vertex 3\'s color').to.be.equal('path');
             expect(vertex4.color, 'Vertex 4\'s color').to.be.equal('path');
-            expect(vertex5.color, 'Vertex 5\'s color').to.be.equal('black');
-            expect(vertex5.color, 'Vertex 6\'s color').to.be.equal('black');
+            expect(vertex5.color, 'Vertex 5\'s color').to.be.equal('explored');
+            expect(vertex5.color, 'Vertex 6\'s color').to.be.equal('explored');
 
             expect(edge12.color, 'Edge 1 - 2').to.equal(-1);
             expect(edge13.color, 'Edge 1 - 3').to.equal('path');
@@ -739,9 +739,9 @@ describe('#graffe.js', function() {
               var successfulDijkstra = g.dijkstra('A', 'C');
               expect(successfulDijkstra).to.be.false;
 
-              expect(vertexA.color, 'Vertex A\'s color').to.equal('black');
-              expect(vertexB.color, 'Vertex B\'s color').to.equal('black');
-              expect(vertexC.color, 'Vertex C\'s color').to.equal('black');
+              expect(vertexA.color, 'Vertex A\'s color').to.equal('explored');
+              expect(vertexB.color, 'Vertex B\'s color').to.equal('explored');
+              expect(vertexC.color, 'Vertex C\'s color').to.equal('explored');
 
               expect(edgeAB.color, 'Edge A - B').to.equal(-1);
               expect(edgeAC.color, 'Edge A - C').to.equal(-1);
@@ -753,11 +753,11 @@ describe('#graffe.js', function() {
     });
     describe('#adjacencyMatrix()', function(){
       it('should create an adjacency matrix', function(){
-        var edgeAB = g.addEdge('A', 'B', { cost: 7 }),
-            edgeAC = g.addEdge('A', 'C', { cost: 2 }),
-            edgeAD = g.addEdge('A', 'D', { cost: 4 }),
-            edgeBD = g.addEdge('B', 'D', { cost: 3 }),
-            edgeCD = g.addEdge('C', 'D', { cost: 5 });
+        var edgeAB = g.addEdge('A', 'B', { cost: 7 });
+        var edgeAC = g.addEdge('A', 'C', { cost: 2 });
+        var edgeAD = g.addEdge('A', 'D', { cost: 4 });
+        var edgeBD = g.addEdge('B', 'D', { cost: 3 });
+        var edgeCD = g.addEdge('C', 'D', { cost: 5 });
 
         var adjacencyMatrix = g.matrix(),
             expectedMatrix = { A: { A: { cost: 0, parent: null },

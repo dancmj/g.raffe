@@ -282,7 +282,7 @@ describe('#graffe.js', function() {
         expect(isBipartite).to.be.false;
       });
     });
-    describe('#breadthFirstSearch()', function(){
+    describe.only('#breadthFirstSearch()', function(){
       it('should return error if start vertex is not found', function(){
         var unSuccessfulbfs = g.bfs('M');
 

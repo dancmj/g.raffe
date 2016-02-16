@@ -1,48 +1,23 @@
 var graffe = (function() {
-  const UNEXPLORED = -1;
-  const EXPLORED = 'explored';
-  const QUEUED = 'queued';
-
-  function Vertex(name) {
-    this.name = name;
-    this.adjacents = [];
-    this.maxFlow = null;
-    this.minFlow = 0;
-
-    this.color = UNEXPLORED;
-    this.distanceFromRoot = 0;
-    this.tag = {
-      key: Infinity,
-      parent: null,
-      edge: null
-    };
+  function EventHandler() {
+    this.eventList = [];
   }
 
-  function Edge(source, target, properties) {
-    properties = properties || {};
-    _.forEach(properties, function(val, key) {
-      if (typeof val !== 'number') properties[key] = 0;
-    });
+  function Vertex(name) {
+    this.name = name + '';
+    this.adjacents = [];
+  }
+
+  function Edge(source, target) {
     this.source = source;
     this.target = target;
-    this.cost = properties.cost || 0;
-    this.minFlow = !properties.minFlow || properties.minFlow < 0 ? 0 : properties.minFlow;
-    this.maxFlow = !properties.maxFlow ? Infinity : properties.maxFlow < this.minFlow ? this.minFlow : properties.maxFlow;
-    this.flow = !properties.flow || properties.flow < 0 ? 0 : properties.flow > this.maxFlow ? this.maxFlow : properties.flow;
-
-    this.color = UNEXPLORED;
-    this.redge = null;
     this.fake = false;
-    this.setColor = function(newColor) {
-      this.color = this.redge.color = newColor;
-    }
+    this.redge = null;
   }
 
   function Graph() {
     this.vertices = [];
     this.edges = [];
-    this.directed = true;
-    this.adjacencyMatrix = {};
   }
 
   Graph.prototype = {
@@ -56,7 +31,7 @@ var graffe = (function() {
     },
 
     addVertex: function addVertex(newVertex) {
-      var name = newVertex instanceof Vertex ? newVertex.name + '' : newVertex;
+      var name = newVertex instanceof Vertex ? newVertex.name : newVertex;
 
       if (!name || !/^ *([a-z0-9][a-z0-9 ]*)+$/i.exec(name)) return false;       //regexp => https://regex101.com/r/tL0qW6/3
 
@@ -96,32 +71,17 @@ var graffe = (function() {
       }) || false;
     },
 
-    addEdge: function addEdge(source, target, properties) {
+    addEdge: function addEdge(source, target) {
       if (!source || !target || source == target) return false;
-
-      if (!properties) {
-        properties = {
-          cost: 0,
-          flow: 0,
-          maxFlow: null,
-          minFlow: 0
-        }
-      }
 
       source = this.addVertex(source);
       target = this.addVertex(target);
 
       var repeatedEdge = this.findEdge(source.name, target.name);
-
       if (repeatedEdge) return repeatedEdge;
 
-      var edge = new Edge(source, target, properties);
-      var redge = new Edge(target, source, {
-        cost: Infinity,
-        flow: 0,
-        maxFlow: 0,
-        minFlow: properties.minFlow
-      });
+      var edge = new Edge(source, target);
+      var redge = new Edge(target, source);
 
       redge.fake = true;
       edge.redge = redge;
@@ -156,306 +116,19 @@ var graffe = (function() {
       }), 1);
 
       return true;
-    },
-
-    //////////////////////////////////////
-    isBipartite: function isBipartite() {
-      if (!this.vertices.length || !this.edges.length) return true;
-
-      var queue = [];
-      var result = true;
-      var startVertex = this.vertices[0];
-
-      startVertex.color = 1;
-      queue.push(startVertex);
-
-      while (queue.length > 0 && result) {
-        var v = queue.shift();
-        _.forEach(v.adjacents, function(edge) {
-          if (edge.target.color == UNEXPLORED) {
-            edge.target.color = 1 - v.color;
-            queue.push(edge.target);
-          } else if (edge.target.color == v.color) {
-            result = false;
-          }
-        });
-      }
-
-      return result;
-    },
-
-    bfs: function bfs(startVertex) {
-      startVertex = this.findVertex(startVertex);
-
-      if (!startVertex) return { error: 'Vertex doesn\'t exist.' };
-
-      var events = [];
-      var queue = [];
-      var _this = this;
-
-      startVertex.color = QUEUED;
-      queue.push(startVertex);
-
-      while (queue.length > 0) {
-        var v = queue.shift();
-
-        _.forEach(v.adjacents, function(edge) {
-          if (edge.target.color == UNEXPLORED && !(edge.fake && _this.directed)) {
-            edge.setColor('path');
-            edge.target.distanceFromRoot = v.distanceFromRoot + 1;
-            edge.target.color = QUEUED;
-            queue.push(edge.target);
-          }
-        });
-        v.color = EXPLORED;
-      }
-
-      _this.cleanUp();
-      return {events: events};
-    },
-
-    dfs: function dfs(currentVertex) {
-      currentVertex = this.findVertex(currentVertex);
-
-      if (!currentVertex) return false;
-
-      var _this = this;
-
-      currentVertex.color = 'explored';
-
-      _.forEach(currentVertex.adjacents, function(edge) {
-        if (edge.target.color == UNEXPLORED && !(edge.fake && _this.directed)) {
-          edge.setColor('path');
-          edge.target.distanceFromRoot = currentVertex.distanceFromRoot + 1;
-          _this.dfs(edge.target.name);
-        }
-      });
-
-      return true;
-    },
-
-    prim: function prim(startVertex) {
-      startVertex = this.findVertex(startVertex);
-
-      if (!startVertex) return false;
-
-      this.directed = false;
-      startVertex.tag.key = 0;
-      var heap = BinaryHeap.create(function(vertex) {
-        return vertex.tag.key
-      });
-
-      heap.push(startVertex);
-
-      while (heap.content.length > 0) {
-        var v = heap.pop();
-        v.color = EXPLORED;
-
-        _.forEach(v.adjacents, function(edge) {
-          if (edge.target.color == UNEXPLORED) {
-            if (edge.fake) edge.cost = edge.redge.cost;
-            if (edge.target.color != EXPLORED && edge.cost < edge.target.tag.key) {
-              edge.target.tag = {
-                key: edge.cost,
-                parent: v,
-                edge: edge
-              };
-              heap.push(edge.target);
-            }
-          }
-        });
-      }
-
-      _.forEach(this.vertices, function(vertex) {
-        if (vertex.tag.edge != null) vertex.tag.edge.setColor('path');
-      });
-
-      return true;
-    },
-
-    kruskal: function kruskal() {
-      if (!this.vertices.length || !this.edges.length) return false;
-
-      this.directed = false;
-      var counter = 0;
-      var heap = BinaryHeap.create(function(edge) {
-        return edge.cost;
-      });
-
-      _.forEach(this.edges, function(edge) {
-        heap.push(edge);
-      });
-
-      _.forEach(this.vertices, function(vertex, i) {
-        vertex.color = i;
-      });
-
-      while (heap.content.length > 0 && counter < this.vertices.length - 1) {
-        var e = heap.pop();
-
-        if (e.source.color != e.target.color) {
-          e.color = 'path';
-
-          _.forEach(this.vertices, function(vertex) {
-            if (vertex.color == e.target.color) vertex.color = e.source.color;
-          });
-          counter++;
-        }
-      }
-
-      return true;
-    },
-
-    dijkstra: function dijkstra(startVertex, goalVertex) {
-      startVertex = this.findVertex(startVertex);
-      goalVertex = this.findVertex(goalVertex);
-
-      if (!startVertex || !goalVertex) {
-        return false;
-      }
-
-      var _this = this;
-      var path = [];
-      var heap = BinaryHeap.create(function(vertex) {
-        return vertex.tag.key;
-      });
-
-      startVertex.tag.key = 0;
-      heap.push(startVertex);
-
-      while (heap.content.length > 0) {
-        var v = heap.pop();
-        v.color = 'explored';
-
-        _.forEach(v.adjacents, function(edge) {
-          if (edge.fake) edge.cost = edge.redge.cost;
-          if (edge.target.color != 'explored' && edge.cost < edge.target.tag.key && !(edge.fake && _this.directed)) {
-            var targetTag = edge.target.tag;
-            targetTag.key = edge.cost + v.tag.key;
-            targetTag.parent = v;
-            targetTag.edge = edge;
-
-            edge.target.distanceFromRoot = v.distanceFromRoot + 1;
-
-            heap.push(edge.target);
-          }
-        });
-      }
-
-      var p = goalVertex;
-      while (p) {
-        p.color = 'path';
-        path.unshift(p);
-        if (p.tag.edge) p.tag.edge.setColor('path');
-        p = p.tag.parent;
-      }
-
-      if (startVertex.color !== 'path') return false;
-      if (!_this.directed) return goalVertex.tag.key; //Failsafe, dijkstra negative CANNOT work with undirected graphs
-      //Reset the color of the vertices in path
-      _.forEach(path, function(vertex) {
-        vertex.color = 'explored';
-      });
-
-      heap = BinaryHeap.create(function(edge) {
-        return edge.cost;
-      }); //New heap with unused edges
-
-      _.forEach(_this.edges, function(edge) { //Iterate over non-path edges
-        edge.color !== 'path' ? heap.push(edge) : edge.setColor(UNEXPLORED);
-        // edge not in path? push it to heap : reset color for edge in path
-      });
-
-      while (heap.content.length > 0) {
-        var e = heap.pop();
-
-        if (e.cost + e.source.tag.key < e.target.tag.key) { //IF the cost will be less than the target's key
-          if (e.target.distanceFromRoot < e.source.distanceFromRoot) {
-            var distanceLimit = e.source.distanceFromRoot - e.target.distanceFromRoot,
-              temporalSource = e.source;
-            for (var i = 0; i < distanceLimit; i++) {
-              if (temporalSource.tag.parent == e.target) return false;
-              temporalSource = temporalSource.tag.parent;
-            }
-          } //No negcycles found, add the edge to the graph and change all the children.
-
-          e.target.tag.edge.setColor(UNEXPLORED); //Revert previous edge to parent color.
-          e.target.tag.key = e.cost + e.source.tag.key;
-          e.target.tag.parent = e.source;
-          e.target.tag.edge = e;
-
-          var stack = [];
-          stack.push(e.target);
-
-          while (stack.length > 0) { //Check children's tags
-            var v = stack.pop();
-
-            _.forEach(v.adjacents, function(edge) {
-              if (edge.target.tag.parent === v && !(e.fake && _this.directed)) {
-                stack.push(edge.target);
-                edge.target.distanceFromRoot = edge.source.distanceFromRoot + 1;
-                edge.target.tag.key = edge.cost + edge.source.tag.key;
-                edge.target.tag.parent = edge.source;
-                edge.target.tag.edge = edge;
-              }
-            });
-          }
-        }
-      }
-
-      p = goalVertex;
-
-      while (p) {
-        p.color = 'path';
-        path.unshift(p);
-        if (p.tag.edge) p.tag.edge.setColor('path');
-        p = p.tag.parent;
-      }
-
-      return goalVertex.tag.key;
-    },
-
-    matrix: function matrix() {
-      var _this = this;
-      var vertices = _this.vertices;
-
-      _this.adjacencyMatrix = {};
-
-      _.forEach(vertices, function(vertex_i, i) {
-        _this.adjacencyMatrix[vertex_i.name] = {};
-        _.forEach(vertices, function(vertex_j, j) {
-          _this.adjacencyMatrix[vertex_i.name][vertex_j.name] = {
-            cost: Infinity,
-            parent: null
-          };
-          var current = _this.adjacencyMatrix[vertex_i.name][vertex_j.name];
-          if (i !== j) {
-            _.forEach(_this.edges, function(edge) {
-              if (edge.source.name === vertex_i.name && edge.target.name === vertex_j.name) {
-                current.cost = edge.cost;
-                current.parent = edge.source.name;
-              }
-            });
-          } else {
-            current.cost = 0;
-          }
-        });
-      });
-
-      return _this.adjacencyMatrix;
-    },
-
-    floydWarshall: function floydWarshall() {
-
     }
-    //////////////////////////////////////
   };
 
   function newGraph() {
     return new Graph();
   }
 
+  function newAttributes(graph) {
+    return new GraphAttributes(graph);
+  }
+
   return {
-    new: newGraph
+    newGraph: newGraph,
+    newAttributes: newAttributes
   }
 })();

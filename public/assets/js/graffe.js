@@ -1,11 +1,15 @@
 var graffe = (function() {
+  const UNEXPLORED = -1;
+  const EXPLORED = 'explored';
+  const QUEUED = 'queued';
+
   function Vertex(name) {
     this.name = name;
     this.adjacents = [];
     this.maxFlow = null;
     this.minFlow = 0;
 
-    this.color = -1; // -1 -> unexplored ; path -> treePath ; black -> explored ; gray -> on queue ;
+    this.color = UNEXPLORED;
     this.distanceFromRoot = 0;
     this.tag = {
       key: Infinity,
@@ -26,7 +30,7 @@ var graffe = (function() {
     this.maxFlow = !properties.maxFlow ? Infinity : properties.maxFlow < this.minFlow ? this.minFlow : properties.maxFlow;
     this.flow = !properties.flow || properties.flow < 0 ? 0 : properties.flow > this.maxFlow ? this.maxFlow : properties.flow;
 
-    this.color = -1;
+    this.color = UNEXPLORED;
     this.redge = null;
     this.fake = false;
     this.setColor = function(newColor) {
@@ -168,7 +172,7 @@ var graffe = (function() {
       while (queue.length > 0 && result) {
         var v = queue.shift();
         _.forEach(v.adjacents, function(edge) {
-          if (edge.target.color == -1) {
+          if (edge.target.color == UNEXPLORED) {
             edge.target.color = 1 - v.color;
             queue.push(edge.target);
           } else if (edge.target.color == v.color) {
@@ -189,21 +193,21 @@ var graffe = (function() {
       var queue = [];
       var _this = this;
 
-      startVertex.color = 'gray';
+      startVertex.color = QUEUED;
       queue.push(startVertex);
 
       while (queue.length > 0) {
         var v = queue.shift();
 
         _.forEach(v.adjacents, function(edge) {
-          if (edge.target.color == -1 && !(edge.fake && _this.directed)) {
+          if (edge.target.color == UNEXPLORED && !(edge.fake && _this.directed)) {
             edge.setColor('path');
             edge.target.distanceFromRoot = v.distanceFromRoot + 1;
-            edge.target.color = 'gray';
+            edge.target.color = QUEUED;
             queue.push(edge.target);
           }
         });
-        v.color = 'black';
+        v.color = EXPLORED;
       }
 
       _this.cleanUp();
@@ -217,10 +221,10 @@ var graffe = (function() {
 
       var _this = this;
 
-      currentVertex.color = 'black';
+      currentVertex.color = 'explored';
 
       _.forEach(currentVertex.adjacents, function(edge) {
-        if (edge.target.color == -1 && !(edge.fake && _this.directed)) {
+        if (edge.target.color == UNEXPLORED && !(edge.fake && _this.directed)) {
           edge.setColor('path');
           edge.target.distanceFromRoot = currentVertex.distanceFromRoot + 1;
           _this.dfs(edge.target.name);
@@ -245,12 +249,12 @@ var graffe = (function() {
 
       while (heap.content.length > 0) {
         var v = heap.pop();
-        v.color = 'black';
+        v.color = EXPLORED;
 
         _.forEach(v.adjacents, function(edge) {
-          if (edge.target.color == -1) {
+          if (edge.target.color == UNEXPLORED) {
             if (edge.fake) edge.cost = edge.redge.cost;
-            if (edge.target.color != 'black' && edge.cost < edge.target.tag.key) {
+            if (edge.target.color != EXPLORED && edge.cost < edge.target.tag.key) {
               edge.target.tag = {
                 key: edge.cost,
                 parent: v,
@@ -321,11 +325,11 @@ var graffe = (function() {
 
       while (heap.content.length > 0) {
         var v = heap.pop();
-        v.color = 'black';
+        v.color = 'explored';
 
         _.forEach(v.adjacents, function(edge) {
           if (edge.fake) edge.cost = edge.redge.cost;
-          if (edge.target.color != 'black' && edge.cost < edge.target.tag.key && !(edge.fake && _this.directed)) {
+          if (edge.target.color != 'explored' && edge.cost < edge.target.tag.key && !(edge.fake && _this.directed)) {
             var targetTag = edge.target.tag;
             targetTag.key = edge.cost + v.tag.key;
             targetTag.parent = v;
@@ -350,7 +354,7 @@ var graffe = (function() {
       if (!_this.directed) return goalVertex.tag.key; //Failsafe, dijkstra negative CANNOT work with undirected graphs
       //Reset the color of the vertices in path
       _.forEach(path, function(vertex) {
-        vertex.color = 'black';
+        vertex.color = 'explored';
       });
 
       heap = BinaryHeap.create(function(edge) {
@@ -358,7 +362,7 @@ var graffe = (function() {
       }); //New heap with unused edges
 
       _.forEach(_this.edges, function(edge) { //Iterate over non-path edges
-        edge.color !== 'path' ? heap.push(edge) : edge.setColor(-1);
+        edge.color !== 'path' ? heap.push(edge) : edge.setColor(UNEXPLORED);
         // edge not in path? push it to heap : reset color for edge in path
       });
 
@@ -375,7 +379,7 @@ var graffe = (function() {
             }
           } //No negcycles found, add the edge to the graph and change all the children.
 
-          e.target.tag.edge.setColor(-1); //Revert previous edge to parent color.
+          e.target.tag.edge.setColor(UNEXPLORED); //Revert previous edge to parent color.
           e.target.tag.key = e.cost + e.source.tag.key;
           e.target.tag.parent = e.source;
           e.target.tag.edge = e;
@@ -443,26 +447,8 @@ var graffe = (function() {
 
     floydWarshall: function floydWarshall() {
 
-    },
-    //////////////////////////////////////
-
-    cleanUp: function() {
-      var _this = this;
-
-      _.forEach(_this.edges, function(edge) {
-        edge.setColor(-1);
-      });
-
-      _.forEach(_this.vertices, function(vertex) {
-        vertex.color = -1;
-        vertex.distanceFromRoot = 0;
-        vertex.tag = {
-          key: Infinity,
-          parent: null,
-          edge: null
-        };
-      });
     }
+    //////////////////////////////////////
   };
 
   function newGraph() {

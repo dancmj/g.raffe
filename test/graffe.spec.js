@@ -152,7 +152,7 @@ describe('#graffe.js', function() {
         var edge = g.addEdge('A', 'B');
         expect(g.vertices).to.have.lengthOf(2);
         expect(g.edges).to.have.lengthOf(1);
-      })
+      });
       it('should create an edge with specified properties', function() {
         var properties = {
           cost: 10,
